@@ -1,0 +1,35 @@
+[
+    {
+        "id": "ka07",
+        "name": "Bordó 01",
+        "img": "..\\/public\\/img\\/valentin\\/Kkaspo\\/bordo0101.jpg",
+        "img2": "..\\/public\\/img\\/valentin\\/Kkaspo\\/bordo0102.jpg",
+        "piece": 1
+    },
+    {
+        "id": "ka08",
+        "name": "Bordó 02",
+        "img": "..\\/public\\/img\\/valentin\\/Kkaspo\\/bordo0201.jpg",
+        "img2": "..\\/public\\/img\\/valentin\\/Kkaspo\\/bordo0202.jpg",
+        "piece": 1
+    },
+    {
+        "id": "ka09",
+        "name": "Piros 01",
+        "img": "..\\/public\\/img\\/valentin\\/Kkaspo\\/piros0101.jpg",
+        "img2": "..\\/public\\/img\\/valentin\\/Kkaspo\\/piros0102.jpg",
+        "piece": 1
+    },
+    {
+        "id": "k10",
+        "name": "Piros 02",
+        "img": "..\\/public\\/img\\/valentin\\/Kkaspo\\/piros0201.jpg",
+        "img2": "..\\/public\\/img\\/valentin\\/Kkaspo\\/piros0202.jpg",
+        "piece": 1
+    },
+    {
+        "price": 2000,
+        "type": "kis kaspós vírág",
+        "location": "Kkaspo"
+    }
+]

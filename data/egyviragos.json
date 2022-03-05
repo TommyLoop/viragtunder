@@ -1,0 +1,13 @@
+[
+    {
+        "id": "ve01",
+        "name": "Piros",
+        "img": "..public/img/valentin/egyviragoskubli.jpg",
+        "piece": 9
+    },
+    {
+        "price": 1000,
+        "type": "mikulásvirág",
+        "location": "mikulas"
+    }
+]
