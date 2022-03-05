@@ -37,8 +37,6 @@ $handlerFunction = $routes[$method][$path] ?? "notFoundHandler";
 $safeHandlerFunction = function_exists($handlerFunction) ? $handlerFunction : "notFoundHandler";
 $safeHandlerFunction();
 
-/* ----------------------------- Segéd function ----------------------------- */
-
 
 function compileTemplate($filePath, $params = []): string
 {
