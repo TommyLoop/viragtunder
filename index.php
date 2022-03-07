@@ -1,45 +1,60 @@
 <?php
 
-$method = $_SERVER["REQUEST_METHOD"];
-$parsed = parse_url($_SERVER["REQUEST_URI"]);
-$path = $parsed['path'];
+require __DIR__ . '/vendor/autoload.php';
+
+
 
 /* -------------------------------------------------------------------------- */
 /*                               Útvonalválasztó                              */
 /* -------------------------------------------------------------------------- */
 
-$routes = [
-    "GET" => [
-        "/" => "homeHandler",
-        "/kublik" => "kubliHandler",
-        "/kublik2" => "kubli2Handler",
-        "/rattan" => "rattanHandler",
-        "/rattan2" => "rattan2Handler",
-        "/heartbox" => "heartboxHandler",
-        "/szalas" => "szalasHandler",
-        "/koszoru" => "koszoruHandler",
-        "/angel" =>"angelHandler",
-        "/mikulas" => "mikulasHandler",
-        "/kaspo1" => "kaspo1Handler",
-        "/kaspo2" => "kaspo2Handler",
-        "/cart" => "cartHandler",
-        "/regisztracio" => "regisztracioHandler",
-        "/bejelentkezes" => "bejelentkezesHandler",
-        "/delete-product" => "orderDeleteHandler"
-    ],
-    "POST" => [
-        "/edited" => "editedHandler",
-        "/cart" => "cartSendHandler",
-        '/register' => 'registrationHandler',
-        '/login' => 'loginHandler',
-        '/logout' => 'logoutHandler'
-        
-    ]
-];
-$handlerFunction = $routes[$method][$path] ?? "notFoundHandler";
 
-$safeHandlerFunction = function_exists($handlerFunction) ? $handlerFunction : "notFoundHandler";
-$safeHandlerFunction();
+$dispatcher = FastRoute\simpleDispatcher(function(FastRoute\RouteCollector $r) {
+    $r->addRoute('GET', '/', 'homeHandler');
+    $r->addRoute('GET', '/kublik', 'kubliHandler');
+    $r->addRoute('GET', '/kublik2', 'kubli2Handler');
+    $r->addRoute('GET', '/rattan', 'rattanHandler');
+    $r->addRoute('GET', '/rattan2', 'rattan2Handler');
+    $r->addRoute('GET', '/heartbox', 'heartboxHandler');
+    $r->addRoute('GET', '/szalas', 'szalasHandler');
+    $r->addRoute('GET', '/koszoru', 'koszoruHandler');
+    $r->addRoute('GET', '/angel', 'angelHandler');
+    $r->addRoute('GET', '/mikulas', 'mikulasHandler');
+    $r->addRoute('GET', '/kaspo1', 'kaspo1Handler');
+    $r->addRoute('GET', '/kaspo2', 'kaspo2Handler');
+    $r->addRoute('GET', '/cart', 'cartHandler');
+    $r->addRoute('GET', '/regisztracio', 'regisztracioHandler');
+    $r->addRoute('GET', '/bejelentkezes', 'bejelentkezesHandler');
+    $r->addRoute('GET', '/delete-product', 'orderDeleteHandler');
+    $r->addRoute('POST', '/edited', 'editedHandler');
+    $r->addRoute('POST', '/cart', 'cartSendHandler');
+    $r->addRoute('POST', '/register', 'registrationHandler');
+    $r->addRoute('POST', '/login', 'loginHandler');
+    $r->addRoute('POST', '/logout', 'logoutHandler');
+
+});
+
+
+// Fetch method and URI from somewhere
+$httpMethod = $_SERVER['REQUEST_METHOD'];
+$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+$routeInfo = $dispatcher->dispatch($httpMethod, $uri);
+switch ($routeInfo[0]) {
+    case FastRoute\Dispatcher::NOT_FOUND:
+        // ... 404 Not Found
+        break;
+    case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
+        $allowedMethods = $routeInfo[1];
+        // ... 405 Method Not Allowed
+        break;
+    case FastRoute\Dispatcher::FOUND:
+        $handler = $routeInfo[1];
+        $vars = $routeInfo[2];
+        // ... call $handler with $vars
+        $handler($vars);
+        break;
+}
 
 /* -------------------------------------------------------------------------- */
 /*                              Segéd-függvények                              */
@@ -217,7 +232,9 @@ function kubliHandler()
         'karacsonyTemplate' => $karacsonyTemplate,
         'valentinTemplate' => $valentinTemplate,
         'loginTemplate' => null,
-        'innerCartTemplate' => null
+        'innerCartTemplate' => null,
+        'isAuthorized' => isLoggedIn()
+
 
     ]);
     
@@ -289,7 +306,9 @@ function kubli2Handler() {
         'valentinTemplate' => $valentinTemplate,
         "karacsonyTemplate" => $karacsonyTemplate,
         'loginTemplate' => null,
-        'innerCartTemplate' => null
+        'innerCartTemplate' => null,
+        'isAuthorized' => isLoggedIn()
+
 
     ]);
 }
@@ -360,7 +379,9 @@ function rattanHandler() {
         'valentinTemplate' => $valentinTemplate,
         "karacsonyTemplate" => $karacsonyTemplate,
         'loginTemplate' => null,
-        'innerCartTemplate' => null
+        'innerCartTemplate' => null,
+        'isAuthorized' => isLoggedIn()
+
 
     ]);
 }
@@ -432,7 +453,9 @@ function rattan2Handler() {
         'valentinTemplate' => $valentinTemplate,
         "karacsonyTemplate" => $karacsonyTemplate,
         'loginTemplate' => null,
-        'innerCartTemplate' => null
+        'innerCartTemplate' => null,
+        'isAuthorized' => isLoggedIn()
+
 
     ]);
 }
@@ -504,7 +527,9 @@ function heartboxHandler() {
         'valentinTemplate' => $valentinTemplate,
         'innerIntroductionTemplate' => $introductionTemplate,
         'loginTemplate' => null,
-        'innerCartTemplate' => null
+        'innerCartTemplate' => null,
+        'isAuthorized' => isLoggedIn()
+
 
     ]);
 }
@@ -575,7 +600,9 @@ function szalasHandler() {
         'valentinTemplate' => $valentinTemplate,
         'innerIntroductionTemplate' => $introductionTemplate,
         'loginTemplate' => null,
-        'innerCartTemplate' => null
+        'innerCartTemplate' => null,
+        'isAuthorized' => isLoggedIn()
+
 
     ]);
     
@@ -647,7 +674,9 @@ function koszoruHandler() {
         'valentinTemplate' => $valentinTemplate,
         'innerIntroductionTemplate' => $introductionTemplate,
         'loginTemplate' => null,
-        'innerCartTemplate' => null
+        'innerCartTemplate' => null,
+        'isAuthorized' => isLoggedIn()
+
 
     ]);
 }
@@ -725,7 +754,9 @@ function angelHandler() {
         'valentinTemplate' => $valentinTemplate,
         "karacsonyTemplate" => $karacsonyTemplate,
         'loginTemplate' => null,
-        'innerCartTemplate' => null
+        'innerCartTemplate' => null,
+        'isAuthorized' => isLoggedIn()
+
 
     ]);
 }
@@ -804,7 +835,9 @@ function mikulasHandler() {
         'valentinTemplate' => $valentinTemplate,
         "karacsonyTemplate" => $karacsonyTemplate,
         'loginTemplate' => null,
-        'innerCartTemplate' => null
+        'innerCartTemplate' => null,
+        'isAuthorized' => isLoggedIn()
+
 
     ]);
 }
@@ -882,6 +915,8 @@ function kaspo1Handler() {
         "karacsonyTemplate" => $karacsonyTemplate,
         'innerCartTemplate' => null,
         'loginTemplate' => null,
+        'isAuthorized' => isLoggedIn()
+
 
     ]);
 }
@@ -959,7 +994,9 @@ function kaspo2Handler() {
         'valentinTemplate' => $valentinTemplate,
         "karacsonyTemplate" => $karacsonyTemplate,
         'innerCartTemplate' => null,
-        'loginTemplate' => null
+        'loginTemplate' => null,
+        'isAuthorized' => isLoggedIn()
+
 
     ]);
 }
