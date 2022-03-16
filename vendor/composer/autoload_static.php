@@ -11,6 +11,10 @@ class ComposerStaticInit93d1e2c6f27fb97a0edd58b0fa6bb32f
     );
 
     public static $prefixLengthsPsr4 = array (
+        'P' => 
+        array (
+            'PHPMailer\\PHPMailer\\' => 20,
+        ),
         'F' => 
         array (
             'FastRoute\\' => 10,
@@ -18,6 +22,10 @@ class ComposerStaticInit93d1e2c6f27fb97a0edd58b0fa6bb32f
     );
 
     public static $prefixDirsPsr4 = array (
+        'PHPMailer\\PHPMailer\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
+        ),
         'FastRoute\\' => 
         array (
             0 => __DIR__ . '/..' . '/nikic/fast-route/src',

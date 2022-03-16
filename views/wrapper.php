@@ -124,24 +124,23 @@
               <h5 class="mellow py-2"><i class="fab fa-facebook-square"></i> Facebook:</h5>
               <a class="pb-4 mb-4 card img-hover-zoom border-shadow p-3" href="https://www.facebook.com/Vir%C3%A1gt%C3%BCnd%C3%A9r-M%C5%B1helye-101123411845057" target="_blank"><img class="card-img-top" src="..public/img/carousel.jpg" alt=""></a>
             </div>
-            <form class="col-12 col-md-6">
-              <div class="form-row py-4">
-                <div class="col">
-                  <label>Vezetéknév:</label>
-                  <input type="text" class="form-control">
+            <form class="col-12 col-md-6" action="/submit-message" method="POST">
+            <?php if ($params['isSuccess']) : ?>
+                <div class="alert alert-success" role="alert">
+                    Küldés sikeres!
                 </div>
-                <div class="col">
-                  <label>Keresztnév:</label>
-                  <input type="text" class="form-control">
-                </div>
+            <?php endif; ?>
+              <div class="form-group py-3">
+                  <label>Név:</label>
+                  <input type="text" name="name" class="form-control">
               </div>
               <div class="form-group">
                 <label for="exampleInputEmail1">E-mail cím:</label>
-                <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                <input type="email" name="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
               </div>
               <div class="form-group">
                 <label for="exampleFormControlTextarea1">Üzenet:</label>
-                <textarea class="form-control" id="exampleFormControlTextarea1" rows="7"></textarea>
+                <textarea class="form-control" name="content" id="exampleFormControlTextarea1" rows="7"></textarea>
               </div>
               <button type="submit" class="btn btn-primary">Küldés</button>
             </form>

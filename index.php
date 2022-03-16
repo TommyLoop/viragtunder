@@ -1,6 +1,7 @@
 <?php
 
 require __DIR__ . '/vendor/autoload.php';
+require './Mailer.php';
 
 
 
@@ -31,6 +32,8 @@ $dispatcher = FastRoute\simpleDispatcher(function(FastRoute\RouteCollector $r) {
     $r->addRoute('POST', '/register', 'registrationHandler');
     $r->addRoute('POST', '/login', 'loginHandler');
     $r->addRoute('POST', '/logout', 'logoutHandler');
+    $r->addRoute('POST', '/submit-message', 'submitMessageHandler');
+    $r->addRoute('POST', '/send-mails', 'sendMailsHandler');
 
 });
 
@@ -42,11 +45,11 @@ $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $routeInfo = $dispatcher->dispatch($httpMethod, $uri);
 switch ($routeInfo[0]) {
     case FastRoute\Dispatcher::NOT_FOUND:
-        // ... 404 Not Found
+       notFoundHandler();
         break;
     case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
         $allowedMethods = $routeInfo[1];
-        // ... 405 Method Not Allowed
+        notFoundHandler();
         break;
     case FastRoute\Dispatcher::FOUND:
         $handler = $routeInfo[1];
@@ -158,7 +161,8 @@ function homeHandler() {
         'innerIntroductionTemplate' => $introductionTemplate,
         'loginTemplate' => null,
         'innerCartTemplate' => null,
-        'isAuthorized' => isLoggedIn()
+        'isAuthorized' => isLoggedIn(),
+        'isSuccess' => isset($_GET['kuldesSikeres'])
 
     ]);
 
@@ -1384,6 +1388,90 @@ function logoutHandler()
 }
 
 
+/* ----------------------------- /submit-message ---------------------------- */
+
+function submitMessageHandler()
+{
+    $pdo = getConnection();
+    $statement = $pdo->prepare("INSERT INTO `messages` 
+    (`email`, `subject`, `body`, `status`, `numberOfAttempts`, `sentAt`, `createdAt`) 
+    VALUES 
+    (?, ?, ?, ?, ?, ?, ?);");
+    $body = compileTemplate("./views/email-template.php", [
+        'name' =>  $_POST['name'] ?? '',
+        'email' =>  $_POST['email'] ?? '',
+        'content' =>  $_POST['content'],
+    ]);
+    $statement->execute([
+        $_SERVER['RECIPIENT_EMAIL'],
+        "Új üzenet érkezett",
+        $body,
+        'notSent',
+        0,
+        0,
+        time()
+    ]);
+
+    header('Location: /?kuldesSikeres=1#contact');   
+}
+
+/* ------------------------------- /send-mails ------------------------------ */
+
+function sendMailsHandler()
+{
+    if(($_POST['key'] ?? '') !== $_SERVER['WORKER_KEY']) {
+        http_response_code(401);
+        echo json_encode(['error' => 'unauthorized']);
+        return;
+    }
+
+    $pdo = getConnection();
+    $statement = $pdo->prepare(
+        "SELECT * FROM messages 
+        WHERE 
+        status = 'notSent' AND 
+        numberOfAttempts < 10 
+        ORDER BY createdAt ASC"
+    );
+    $statement->execute();
+    $messages = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($messages as $message) {
+        $pdo = getConnection();
+        $statement = $pdo->prepare(
+            "UPDATE `messages` SET 
+                status = 'sending', 
+                numberOfAttempts = ? 
+            WHERE id = ?;"
+        );
+
+        $statement->execute([
+            (int)$message['numberOfAttempts'] + 1,
+            $message['id']
+        ]);
+
+        $isSent = sendMail(
+            $message['email'],
+            $message['subject'],
+            $message['body']
+        );
+
+        if ($isSent) {
+            $statement = $pdo->prepare(
+                "UPDATE `messages` SET status = 'sent', sentAt = ? WHERE id = ?;"
+            );
+            $statement->execute([
+                time(),
+                $message['id'],
+            ]);
+        } else {
+            $statement = $pdo->prepare("UPDATE `messages` SET status = 'notSent' WHERE id = ?;");
+            $statement->execute([
+                $message['id']
+            ]);
+        }
+    }
+}
 
 
 
