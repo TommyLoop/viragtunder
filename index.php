@@ -34,6 +34,8 @@ $dispatcher = FastRoute\simpleDispatcher(function(FastRoute\RouteCollector $r) {
     $r->addRoute('POST', '/logout', 'logoutHandler');
     $r->addRoute('POST', '/submit-message', 'submitMessageHandler');
     $r->addRoute('POST', '/send-mails', 'sendMailsHandler');
+    $r->addRoute('POST', '/userinvoicing', 'userInvoicingHandler');
+    $r->addRoute('POST', '/usertransport', 'userTransportHandler');
 
 });
 
@@ -1023,7 +1025,8 @@ function cartHandler() {
         'innerIntroductionTemplate' => null,
         'loginTemplate' => null,
         'innerTemplate' => null,
-        'isAuthorized' => false
+        'isAuthorized' => false,
+        'isSuccess' => isset($_GET['kuldesSikeres'])
     ]);
 }
 
@@ -1046,8 +1049,10 @@ function regisztracioHandler()
             'innerIntroductionTemplate' => null,
             'innerTemplate' => null,
             'innerCartTemplate' => null,
-            'isAuthorized' => isLoggedIn()
+            'isAuthorized' => isLoggedIn(),
+            'isSuccess' => isset($_GET['kuldesSikeres'])
     ]);
+    header('Location: /bejelentkezes');
 }
 
 /* ---------------------------- "/bejelentkezes" ---------------------------- */
@@ -1055,25 +1060,121 @@ function regisztracioHandler()
 function bejelentkezesHandler()
 {
     if(isLoggedIn()) {
-        $loginTemplate = compileTemplate('./views/loggedin.php', [
-        
-        ] );
-        echo compileTemplate('./views/wrapper.php', [
-            'loginTemplate' => $loginTemplate,
-            'rattanTemplate' => null,
-            'heartboxTemplate' => null,
-            'szalasTemplate' => null,
-            'koszoruTemplate' => null,
-            "karacsonyTemplate" => null,
-            'bemutatoTemplate' => null,
-            'valentinTemplate' => null,
-            'innerIntroductionTemplate' => null,
-            'innerTemplate' => null,
-            'innerCartTemplate' => null,
-            'isAuthorized' => isLoggedIn()
+        $userId = $_SESSION["userId"];
+        $pdo = getConnection();
+        $statement = $pdo->prepare("SELECT * FROM users WHERE id=?");
+        $statement->execute([$userId]);
+        $user = $statement->fetch(PDO::FETCH_ASSOC);
+        if($user["personalID"] === null){
+            $loginTemplate = compileTemplate('./views/loggedin.php', [
+                "id" => $userId,
+                "personal" => null,
+                "transport" => null,
+            ] );
+            echo compileTemplate('./views/wrapper.php', [
+                'loginTemplate' => $loginTemplate,
+                'rattanTemplate' => null,
+                'heartboxTemplate' => null,
+                'szalasTemplate' => null,
+                'koszoruTemplate' => null,
+                "karacsonyTemplate" => null,
+                'bemutatoTemplate' => null,
+                'valentinTemplate' => null,
+                'innerIntroductionTemplate' => null,
+                'innerTemplate' => null,
+                'innerCartTemplate' => null,
+                'isAuthorized' => isLoggedIn(),
+                'isSuccess' => isset($_GET['kuldesSikeres'])
+                
+            ]);
+            return;
             
-        ]);
-        return;
+        }
+        else{
+            $personalID = $user["personalID"];
+            $pdo = getConnection();
+            $statement = $pdo->prepare("SELECT * FROM `personal` WHERE id=?");
+            $statement->execute([$personalID]);
+            $personal = $statement->fetch(PDO::FETCH_ASSOC);
+            if($personal["transportID"] === null)
+            {
+                $loginTemplate = compileTemplate('./views/loggedin.php', [
+                    "id" => $personalID,
+                    "personal" => $personalID,
+                    "transport" => null,
+                    "name" => $personal["name"],
+                    "phone" => $personal["phoneNumber"],
+                    "taxnumber" => $personal["taxNumber"],
+                    "zipcode" => $personal["zipcode"],
+                    "city" => $personal["city"],
+                    "address" => $personal["address"]
+                ] );
+                echo compileTemplate('./views/wrapper.php', [
+                    'loginTemplate' => $loginTemplate,
+                    'rattanTemplate' => null,
+                    'heartboxTemplate' => null,
+                    'szalasTemplate' => null,
+                    'koszoruTemplate' => null,
+                    "karacsonyTemplate" => null,
+                    'bemutatoTemplate' => null,
+                    'valentinTemplate' => null,
+                    'innerIntroductionTemplate' => null,
+                    'innerTemplate' => null,
+                    'innerCartTemplate' => null,
+                    'isAuthorized' => isLoggedIn(),
+                    'isSuccess' => isset($_GET['kuldesSikeres'])
+                    
+                ]);
+                return;
+            }else{
+                $transportID = $personal["transportID"];
+                $pdo = getConnection();
+                $statement = $pdo->prepare("SELECT * FROM `transport` WHERE id=?");
+                $statement->execute([$transportID]);
+                $transport = $statement->fetch(PDO::FETCH_ASSOC);
+                $loginTemplate = compileTemplate('./views/loggedin.php', [
+                    "id" => $personalID,
+                    "personal" => $personalID,
+                    "transport" => $transportID,
+                    "name" => $personal["name"],
+                    "phone" => $personal["phoneNumber"],
+                    "taxnumber" => $personal["taxNumber"],
+                    "zipcode" => $personal["zipcode"],
+                    "city" => $personal["city"],
+                    "address" => $personal["address"],
+                    "transportName" => $transport["name"],
+                    "transportPhone" => $transport["phone"],
+                    "transportZipcode" => $transport["zipcode"],
+                    "transportCity" => $transport["city"],
+                    "transportAddress" => $transport["address"],
+                    "transportComment" => $transport["comment"],
+
+                ] );
+                echo compileTemplate('./views/wrapper.php', [
+                    'loginTemplate' => $loginTemplate,
+                    'rattanTemplate' => null,
+                    'heartboxTemplate' => null,
+                    'szalasTemplate' => null,
+                    'koszoruTemplate' => null,
+                    "karacsonyTemplate" => null,
+                    'bemutatoTemplate' => null,
+                    'valentinTemplate' => null,
+                    'innerIntroductionTemplate' => null,
+                    'innerTemplate' => null,
+                    'innerCartTemplate' => null,
+                    'isAuthorized' => isLoggedIn(),
+                    'isSuccess' => isset($_GET['kuldesSikeres'])
+                    
+                ]);
+                return;
+            }
+
+            
+
+        }
+
+
+        
         
     }
     
@@ -1092,7 +1193,8 @@ function bejelentkezesHandler()
             'innerIntroductionTemplate' => null,
             'innerTemplate' => null,
             'innerCartTemplate' => null,
-            'isAuthorized' => false
+            'isAuthorized' => false,
+            'isSuccess' => isset($_GET['kuldesSikeres'])
     ]);
     
 }
@@ -1289,13 +1391,14 @@ function registrationHandler()
     
     };
     $statment2 = $pdo->prepare(
-        "INSERT INTO `users` (`email`, `password`, `createdAt`) 
-        VALUES (?, ?, ?);" 
+        "INSERT INTO `users` (`email`, `password`, `createdAt`, `personalID`) 
+        VALUES (?, ?, ?, ?);" 
     );
     $statment2->execute([
         $_POST["email"],
         password_hash($_POST["password"], PASSWORD_DEFAULT),
-        time()
+        time(),
+        null
     ]);
     $regisztracioTemplate = compileTemplate('./views/register.php', [
         'message' => "successful"
@@ -1312,7 +1415,8 @@ function registrationHandler()
         'innerIntroductionTemplate' => null,
         'innerTemplate' => null,
         'innerCartTemplate' => null,
-        'isAuthorized' => isLoggedIn()
+        'isAuthorized' => isLoggedIn(),
+        'isSuccess' => isset($_GET['kuldesSikeres'])
     ]);
 
     header('Location: /regisztracio'); 
@@ -1473,6 +1577,72 @@ function sendMailsHandler()
     }
 }
 
+/* ----------------------------- /userinvoicing ----------------------------- */
+
+function userInvoicingHandler()
+{
+    $userID = $_POST["id"];
+    $pdo = getConnection();
+    $statement = $pdo->prepare("INSERT INTO `personal` 
+    (`name`, `zipcode`, `city`, `address`, `phoneNumber`, `taxNumber`, `transportID`) 
+    VALUES 
+    (?, ?, ?, ?, ?, ?, ?);");
+    $statement->execute([
+        $_POST["username"],
+        $_POST["zipcode"], 
+        $_POST["city"], 
+        $_POST["address"], 
+        $_POST["phonenumber"], 
+        $_POST["taxnumber"], 
+        null
+
+    ]);
+    $newrecord = $pdo->prepare("SELECT * FROM `personal` ");
+    $newrecord->execute();
+    $personal = $newrecord->fetchAll(PDO::FETCH_ASSOC);
+    $lastId = end($personal);
+    $personalID = $pdo->prepare("UPDATE `users`
+    SET personalID = ?
+    WHERE id = ?");
+    $personalID->execute([
+        $lastId["id"],
+        $userID
+    ]);
+    header('Location: /bejelentkezes');
+}
+
+
+
+function userTransportHandler()
+{
+    $userID = $_POST["id"];
+    $pdo = getConnection();
+    $statement = $pdo->prepare("INSERT INTO `transport` 
+    (`name`, `phone`, `zipcode`, `city`, `address`,  `comment`) 
+    VALUES 
+    (?, ?, ?, ?, ?, ?);");
+    $statement->execute([
+        $_POST["username"],
+        $_POST["phonenumber"],
+        $_POST["zipcode"], 
+        $_POST["city"], 
+        $_POST["address"], 
+        $_POST["content"]
+
+    ]);
+    $newrecord = $pdo->prepare("SELECT * FROM `transport` ");
+    $newrecord->execute();
+    $transport = $newrecord->fetchAll(PDO::FETCH_ASSOC);
+    $lastId = end($transport);
+    $transportID = $pdo->prepare("UPDATE `personal`
+    SET transportID = ?
+    WHERE id = ?");
+    $transportID->execute([
+        $lastId["id"],
+        $userID
+    ]);
+    header('Location: /bejelentkezes');
+}
 
 
 
