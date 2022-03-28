@@ -36,6 +36,9 @@ $dispatcher = FastRoute\simpleDispatcher(function(FastRoute\RouteCollector $r) {
     $r->addRoute('POST', '/send-mails', 'sendMailsHandler');
     $r->addRoute('POST', '/userinvoicing', 'userInvoicingHandler');
     $r->addRoute('POST', '/usertransport', 'userTransportHandler');
+    $r->addRoute('POST', '/personaledited', 'personaleditedHandler');
+    $r->addRoute('POST', '/transportedited', 'transporteditedHandler');
+
 
 });
 
@@ -1025,7 +1028,7 @@ function cartHandler() {
         'innerIntroductionTemplate' => null,
         'loginTemplate' => null,
         'innerTemplate' => null,
-        'isAuthorized' => false,
+        'isAuthorized' => isLoggedIn(),
         'isSuccess' => isset($_GET['kuldesSikeres'])
     ]);
 }
@@ -1060,6 +1063,8 @@ function regisztracioHandler()
 function bejelentkezesHandler()
 {
     if(isLoggedIn()) {
+        $szerkesztes = $_GET["p-edit"];
+        $transportEdit = $_GET["t-edit"];
         $userId = $_SESSION["userId"];
         $pdo = getConnection();
         $statement = $pdo->prepare("SELECT * FROM users WHERE id=?");
@@ -1070,6 +1075,8 @@ function bejelentkezesHandler()
                 "id" => $userId,
                 "personal" => null,
                 "transport" => null,
+                "personalEdit" => $szerkesztes ?? "",
+                "transportEdit" => $transportEdit ?? "",
             ] );
             echo compileTemplate('./views/wrapper.php', [
                 'loginTemplate' => $loginTemplate,
@@ -1091,6 +1098,8 @@ function bejelentkezesHandler()
             
         }
         else{
+            $szerkesztes = $_GET["p-edit"];
+            $transportEdit = $_GET["t-edit"];
             $personalID = $user["personalID"];
             $pdo = getConnection();
             $statement = $pdo->prepare("SELECT * FROM `personal` WHERE id=?");
@@ -1101,6 +1110,8 @@ function bejelentkezesHandler()
                 $loginTemplate = compileTemplate('./views/loggedin.php', [
                     "id" => $personalID,
                     "personal" => $personalID,
+                    "personalEdit" => $szerkesztes ?? "",
+                    "transportEdit" => $transportEdit ?? "",
                     "transport" => null,
                     "name" => $personal["name"],
                     "phone" => $personal["phoneNumber"],
@@ -1136,6 +1147,8 @@ function bejelentkezesHandler()
                     "id" => $personalID,
                     "personal" => $personalID,
                     "transport" => $transportID,
+                    "personalEdit" => $szerkesztes ?? "",
+                    "transportEdit" => $transportEdit ?? "",
                     "name" => $personal["name"],
                     "phone" => $personal["phoneNumber"],
                     "taxnumber" => $personal["taxNumber"],
@@ -1611,7 +1624,7 @@ function userInvoicingHandler()
     header('Location: /bejelentkezes');
 }
 
-
+/* ---------------------------- "/usertransport" ---------------------------- */
 
 function userTransportHandler()
 {
@@ -1644,7 +1657,43 @@ function userTransportHandler()
     header('Location: /bejelentkezes');
 }
 
+/* ---------------------------- "/personaledited" --------------------------- */
 
+function personaleditedHandler()
+{
+   $personalID = $_POST["personalID"];
+   $column = $_POST["column"];
+   $newValue = $_POST["$column"];
+   $pdo = getConnection();
+   $editedValue = $pdo->prepare("UPDATE `personal`
+   SET $column = ? 
+   WHERE id = ?");
+   $editedValue->execute([
+    $newValue,
+    $personalID
+   ]);
+   header('Location: /bejelentkezes');
+   
+}
+
+/* ---------------------------- "/transportedited" --------------------------- */
+
+function transporteditedHandler()
+{
+   $transportID = $_POST["transportID"];
+   $column = $_POST["column"];
+   $newValue = $_POST["$column"];
+   $pdo = getConnection();
+   $editedValue = $pdo->prepare("UPDATE `transport`
+   SET $column = ? 
+   WHERE id = ?");
+   $editedValue->execute([
+    $newValue,
+    $transportID
+   ]);
+   header('Location: /bejelentkezes');
+   
+}
 
 
 
