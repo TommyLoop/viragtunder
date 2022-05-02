@@ -18,13 +18,13 @@ $index = $params['foundProductIndex'] ?? 7;
 ?>
 
 <div id="heartbox">
-  <div class="card card-body backcol2" >
-    <div class="row p-2 m-2">
-      <div class="col-12 col-md-12">
-        <img class="img-fluid m-2 p-2" src="../public/img/szivboxok.jpg" alt="">
+  <div class="backcol2" >
+    <div class="row p-2">
+      <div class="col-12 col-lg-12">
+        <img class="img-fluid my-2 py-2" src="../public/img/szivboxok.jpg" alt="">
       </div>
       <div class="row">
-        <div class="col-12 col-md-6 pt-2">
+        <div class="col-12 col-lg-6 pt-2">
           <div>
             <h3 class="m-2 blue px-2 text-center">Szívbox</h3>
             <h5 class="mellow m-3 px-2">
@@ -34,13 +34,13 @@ $index = $params['foundProductIndex'] ?? 7;
             </h5>
           </div>
           <div class="row">
-            <div class=" col-12 col-md-6 text-center p-2 mt-2">
+            <div class=" col-12 text-center p-2 mt-2">
               <h3 class="mellow m-3 px-2 text-center">Ára: <span style="color:red; font-style:italic;"><?php echo $heartbox[8]["price"] ?> Ft</span></h3>
             </div>
           </div>
 
         </div>
-        <div class="col-12 col-md-6 pt-4">
+        <div class="col-12 col-lg-6 pt-4">
           <div class="termekleiras text-center py-3 m-2">
             <div class="row borbott text-left mx-2 p-2">
               <div class="col-12"><i class="fas fa-cut"></i> Kézműves termék</div>
@@ -66,12 +66,12 @@ $index = $params['foundProductIndex'] ?? 7;
               <div class="col-8">papír, vetex, szatén, strassz, gyöngy, fa, csipke, művirág, hungarocell</div>
             </div>
           </div>
-          <div class="m-4 p-4" id="szivbox">
-            <a href="#contact"><button type="button" class="btn btn-outline-success btn-lg btn-block"><i class="far fa-envelope"></i> Ha kérdésed van, írj nekem!</button></a>
+          <div class="m-4 p-3" id="szivbox">
+          <a href="#contact"><button type="button" class="btn btn-outline-success btn-lg btn-block"><i class="far fa-envelope"></i> Ha rendelni szeretnél vagy kérdésed van</button></a>
           </div>
         </div>
-        <div class="col-12 p-2 m-2" >
-          <div class="row border-shadow py-3">
+        <div class="col-12 p-md-2" >
+          <div class="row none py-3 ">
             <div class="col-12 col-md-6" id="FirstHeart">
               <img class="img-fluid" src="<?php echo $heartbox[$index]["img"] ?>" alt="">
             </div>
@@ -81,25 +81,29 @@ $index = $params['foundProductIndex'] ?? 7;
             <div class="col-12 py-2 text-center">
             <form action="/cart" method="POST"> 
                 <div class="row">
-                    <div class="col-12 col-md-3 p-2">
+                    <div class="col-12 col-lg-3 p-2">
                     <input type="hidden" name="id" value="<?php echo $heartbox[$index]["id"] ?>"/>
                     <h5 class="mellow"><?php echo $heartbox[$index]["name"] ?></h5>
                     </div>
-                    <div class="col-12 col-md-3 p-2 my-2">
+                    <div class="col-12 col-lg-3 p-2 my-2">
                     <input type="hidden" name="location" value="<?php echo $heartbox[8]["location"] ?>"/>
                     <h5 style="color:red;"><?php echo heartboxPieceChecker($heartbox[$index]["piece"]) ?></h5>
                     </div>
-                    <div class="col-12 col-md-3 p-2 my-2">
-                    <input class="w-30" type="number" name="piece" size="5" min="1" max="<?php echo $heartbox[$index]['piece'] ?>" <?php echo $heartbox[$index]['piece'] === 0 ? "disabled" : "" ?>></input>
+                    <div class="col-12 col-lg-3 mt-2 py-2 d-flex justify-content-center">
+                    <div class="row">
+                        <button type="button" id="heartboxDecrement" class="input-number-decrement" <?php echo $heartbox[$index]['piece'] === 0 ? "disabled" : "" ?>>–</button>
+                        <div id="heartbox1"><input id="heartboxPiece" class="input-number" name="piece" value="1" type="text" min="1" max="<?php echo $heartbox[$index]['piece'] ?>" <?php echo $heartbox[$index]['piece'] === 0 ? "disabled" : "" ?>></div>
+                        <button type="button" id="heartboxIncrement" class="input-number-increment" <?php echo $heartbox[$index]['piece'] === 0 ? "disabled" : "" ?>>+</button>
+                      </div>
                     </div>
-                    <div class="col-12 col-md-3 pt-3 px-5">
-                    <button type="submit" class=" btn btn-block btn-success" <?php echo $heartbox[$index]['piece'] === 0 ? "disabled" : "" ?>>Kosárba</button>
+                    <div class="col-12 col-lg-3 py-3 px-5">
+                    <button type="submit" class="btn-block button" style="vertical-align:middle" <?php echo $heartbox[$index]['piece'] === 0 ? "disabled" : "" ?>><span>Kosárba</span></button>
                     </div>
                 </div>
             </form>    
             </div>
-            <div class="col-12 col-md-6 py-2">
-              <div class="row">
+            <div class="col-12 col-lg-6 py-2">
+              <div class="row none">
                 <div class="col-3 bord">
                 <a href="/heartbox?id=<?php echo $heartbox[0]["id"] ?>#szivbox" method="GET" ><img class="img-fluid hov" src="../public/img/heartbox/arany01.jpg" alt=""></a>
                 </div>
@@ -114,8 +118,8 @@ $index = $params['foundProductIndex'] ?? 7;
                 </div>
               </div>
             </div>
-            <div class="col-12 col-md-6 py-2">
-              <div class="row">
+            <div class="col-12 col-lg-6 py-2">
+              <div class="row none">
                 <div class="col-3 bord">
                 <a href="/heartbox?id=<?php echo $heartbox[4]["id"] ?>#szivbox" method="GET" ><img class="img-fluid hov" src="../public/img/heartbox/malyvavintage01.jpg" alt=""></a>
                 </div>
@@ -137,5 +141,5 @@ $index = $params['foundProductIndex'] ?? 7;
   </div>
 </div>
 <div class="col21">
-      <div class="col-12 px-5 text-center"><img class="img-fluid col-3 px-3" src="./public/img/logo5.png" alt=""></div>
+      <div class="col-12 px-5 text-center"><img class="img-fluid col-md-3 px-3" src="./public/img/logo5.png" alt=""></div>
       </div>

@@ -1,6 +1,6 @@
 <div class="container backcol py-5">
 
-    <div id="valami" class="carousel slide" data-ride="carousel">
+    <div id="valami" class="carousel slide d-none d-sm-block col-md-12" data-ride="carousel">
         <ol class="carousel-indicators" data-interval="5000">
           <li data-target="#valami" data-slide-to="0" class="active"></li>
           <li data-target="#valami" data-slide-to="1"></li>
@@ -16,7 +16,7 @@
             <img class="d-block w-100" src="..public/img/carousel2.jpg" alt="Second slide">
           </div>
           <div class="carousel-item">
-            <img class="d-block w-100" src="..public/img/carousel6.jpg" alt="Third slide">
+            <img class="d-block w-100" src="..public/img/carousel7.jpg" alt="Third slide">
           </div>
           <div class="carousel-item">
             <img class="d-block w-100" src="..public/img/carousel4.jpg" alt="Fourth slide">
@@ -38,13 +38,13 @@
 
 
     <div class="container">
-      <div class="row p-4  text-center backcol" id="main">
-        <div class="col-12 col-md-5">
+      <div class="row p-md-4  text-center backcol" id="main">
+        <div class="col-12 col-lg-5">
           <img class="img-fluid border-shadow p-3" src="..public/img/termek1.jpg">
         </div>
-        <div class="row col-12 col-md-7">
-          <div class="col-md-4"><img class="img-fluid col-12 none" src="..public/img/logo2.png" alt=""></div>
-          <div class="col-md-8">
+        <div class="row col-12 col-lg-7">
+          <div class="col-12 col-lg-4"><img class="img-fluid col-12 none" src="..public/img/logo2.png" alt=""></div>
+          <div class="col-12 col-lg-8">
             <h1>Virágtündér Műhelye</h1>
             <p class="blue text-center pb-4">Örökvirágok szaténból</p>
           </div>

@@ -7,6 +7,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Carattere&display=swap');
 
 
+
 .fomenu {
     background-image: url('hatter.jpg');
     background-attachment: fixed;
@@ -63,6 +64,7 @@ section.foinfo {
 }
 .tatu-nav {
   background-color: white;
+  color: pink;
     -webkit-box-shadow: 3px 6px 26px 2px rgba(0,0,0,0.65);
     -moz-box-shadow: 3px 6px 26px 2px rgba(0,0,0,0.65);
     box-shadow: 3px 6px 26px 2px rgba(0,0,0,0.65);
@@ -75,6 +77,16 @@ section.foinfo {
     -webkit-box-shadow: 3px 6px 26px 2px rgba(0,0,0,0.65);
     -moz-box-shadow: 3px 6px 26px 2px rgba(0,0,0,0.65);
     box-shadow: 3px 6px 26px 2px rgba(0,0,0,0.65);
+
+}
+.border-shadow {
+  border-radius: 10px 10px 10px 10px;
+  -moz-border-radius: 10px 10px 10px 10px;
+  -webkit-border-radius: 10px 10px 10px 10px;
+  border: 0px solid #000000;
+  -webkit-box-shadow: 3px 6px 26px 2px rgba(0,0,0,0.65);
+  -moz-box-shadow: 3px 6px 26px 2px rgba(0,0,0,0.65);
+  box-shadow: 3px 6px 26px 2px rgba(0,0,0,0.65);
 
 }
 
@@ -118,6 +130,12 @@ h4 {
 }
 .dropdown-menu:hover {
   cursor: pointer;
+}
+.left-radius {
+  background-color: #6b7eff;
+  color: white;
+  border-right: none;
+  border-radius: 40px 0 0 40px;
 }
 .pointer {
   cursor: pointer;
@@ -200,6 +218,149 @@ img.hov:hover {
   */
 
 }
+ 
+.button {
+
+  border-radius: 30px;
+  border: solid 4px #0a9734;
+  background: #00B637;
+  color: white;
+  font-family: inherit;
+  text-align: center;
+  padding: 0.7em;
+  transition: all 0.4s;
+  cursor: pointer;
+ }
+ 
+ .button span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.4s;
+ }
+ 
+ .button span:after {
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  content: "\f07a";
+  color: white;
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  right: -20px;
+  transition: 0.7s;
+ }
+ 
+ .button:hover {
+  background: #268542;
+  border: solid 4px #fee7d5;
+ }
+ .button:hover span {
+  padding-right: 2em;
+ }
+ 
+ .button:hover span:after {
+  opacity: 4;
+  right: 0;
+ }
+
+ .send {
+
+  border-radius: 30px;
+  border: solid 4px #12515e;
+  background: #307280;
+  color: white;
+  font-family: inherit;
+  text-align: center;
+  padding: 0.7em;
+  transition: all 0.4s;
+  cursor: pointer;
+ }
+ 
+ .send span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.4s;
+ }
+ 
+ .send span:after {
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  content: "\f0e0";
+  color: white;
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  right: -20px;
+  transition: 0.7s;
+ }
+ 
+ .send:hover {
+  background: #249ab8;
+  border: solid 4px #ffffff;
+ }
+ .send:hover span {
+  padding-right: 2em;
+ }
+ 
+ .send:hover span:after {
+  opacity: 4;
+  right: 0;
+ }
+
+ 
+.input-number {
+  width: 70px;
+  padding: 0 12px;
+  vertical-align: top;
+  text-align: center;
+  outline: none;
+}
+
+.input-number,
+.input-number-decrement,
+.input-number-increment {
+  border: 1px solid #ccc;
+  height: 45px;
+  user-select: none;
+}
+
+
+.input-number-decrement,
+.input-number-increment {
+  display: inline-block;
+  width: 30px;
+  line-height: 38px;
+  background: #f1f1f1;
+  color: #444;
+  text-align: center;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.input-number-increment:active {
+  border: none;
+  background: rgb(170, 184, 245);
+}
+.input-number-decrement:active {
+  border: none;
+  background: rgb(170, 184, 245);
+}
+
+  
+
+.input-number-decrement {
+  border-right: none;
+  border-radius: 40px 0 0 40px;
+}
+
+
+.input-number-increment {
+  border-left: none;
+  border-radius: 0 40px 40px 0;
+}
+
 
   /* [1] The container */
 .img-hover-zoom {
