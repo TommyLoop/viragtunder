@@ -1,6 +1,6 @@
 <div id="bemutato">
-  <div class="card card-body backcol">
-    <div class="row p-2 m-2">
+  <div class="backcol">
+    <div class="row p-2">
       <div class="col-12 col-md-12">
         <img class="img-fluid m-2 p-2" src="..public/img/bemutato.jpg" alt="">
       </div>
@@ -10,7 +10,7 @@
         <hr>
       </div>
       <div class="row">
-        <div class="col-12 col-md-6 pt-2">
+        <div class="col-12 col-lg-6 pt-2">
           <div>
             <h3 class="m-2 blue px-2 text-center">Kaspós virágok</h3>
             <h5 class="mellow m-3 px-2">
@@ -20,15 +20,12 @@
             </h5>
           </div>
           <div class="row">
-            <div class=" col-12 col-md-6 text-center pt-2 mt-2">
+            <div class=" col-12 col-lg-6 text-center pt-2 mt-2">
               <h3 class="mellow m-3 px-2 text-center">Ára: <span style="color:red; font-style:italic;">2000 Ft</span></h3>
             </div>
           </div>
-          <div class="m-4 p-4">
-            <a href="#contact"><button type="button" class="btn btn-outline-success btn-lg btn-block"><i class="far fa-envelope"></i> Ha kérdésed van, írj nekem!</button></a>
-          </div>
         </div>
-        <div class="col-12 col-md-6 pt-4">
+        <div class="col-12 col-lg-6 pt-4">
           <div class="termekleiras text-center py-3 m-2">
             <div class="row borbott text-left mx-2 p-2">
               <div class="col-12"><i class="fas fa-cut"></i> Kézműves termék</div>
@@ -54,9 +51,12 @@
               <div class="col-8">kerámia, vetex, hungarocell, szatén, gyöngy, csipke, strassz, kő, fa, művirág,</div>
             </div>
           </div>
+          <div class="m-4 p-3">
+                <a href="#contact"><button type="button" class="btn btn-outline-success btn-lg btn-block"><i class="far fa-envelope"></i> Ha rendelni szeretnél vagy kérdésed van</button></a>
+          </div>
         </div>
-        <div class="col-12 p-2 m-2">
-          <div class="row border-shadow py-3">
+        <div class="col-12">
+          <div class="m-2 py-3">
             <div id="carouselExampleCaptions" class="carousel slide" data-ride="carousel">
               <ol class="carousel-indicators">
                 <li data-target="#carouselExampleCaptions" data-slide-to="0" class="active"></li>
@@ -124,7 +124,8 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-12 col-md-6 pt-4">
+
+      <div class="col-12 col-lg-6 pt-4 d-none d-lg-block">
         <div class="termekleiras text-center py-3 m-2">
           <div class="row borbott text-left mx-2 p-2">
             <div class="col-12"><i class="fas fa-cut"></i> Kézműves termék</div>
@@ -151,7 +152,8 @@
           </div>
         </div>
       </div>
-      <div class="col-12 col-md-6 pt-2">
+
+      <div class="col-12 col-lg-6 pt-2">
         <div>
           <h3 class="m-2 blue px-2 text-center">Virágcsokrok</h3>
           <h5 class="mellow m-3 px-2">
@@ -165,12 +167,41 @@
             <h3 class="mellow m-3 px-2 text-center">Ára: <span style="color:red; font-style:italic;">3500 Ft-tól</span></h3>
           </div>
         </div>
-        <div class="m-4 p-4">
-          <a href="#contact"><button type="button" class="btn btn-outline-success btn-lg btn-block"><i class="far fa-envelope"></i> Ha kérdésed van, írj nekem!</button></a>
+        <div class="m-4 p-3">
+                <a href="#contact"><button type="button" class="btn btn-outline-success btn-lg btn-block"><i class="far fa-envelope"></i> Ha rendelni szeretnél vagy kérdésed van</button></a>
+          </div>
+      </div>
+
+      <div class="col-12 col-lg-6 pt-4 d-block d-lg-none">
+        <div class="termekleiras text-center py-3 m-2">
+          <div class="row borbott text-left mx-2 p-2">
+            <div class="col-12"><i class="fas fa-cut"></i> Kézműves termék</div>
+          </div>
+          <div class="row borbott text-left mx-2 p-2">
+            <div class="col-4"><i class="fas fa-long-arrow-alt-up"></i> Magasság:</div>
+            <div class="col-8">22 - 24 cm,</div>
+          </div>
+          <div class="row borbott text-left mx-2 p-2">
+            <div class="col-4"><i class="fas fa-long-arrow-alt-right"></i> Hosszúság:</div>
+            <div class="col-8">10 - 12 cm,</div>
+          </div>
+          <div class="row borbott text-left mx-2 p-2">
+            <div class="col-4"><i class="fas fa-arrows-alt-h"></i> Szélesség:</div>
+            <div class="col-8">10 - 12 cm,</div>
+          </div>
+          <div class="row borbott text-left mx-2 p-2">
+            <div class="col-4"><i class="fas fa-weight-hanging"></i> Súly:</div>
+            <div class="col-8">42 dkg - 44 dkg,</div>
+          </div>
+          <div class="row borbott text-left mx-2 p-2">
+            <div class="col-4"><i class="fab fa-buffer"></i> Anyaga:</div>
+            <div class="col-8">kerámia, vetex, hungarocell, szatén, gyöngy, csipke, strassz, kő, fa, művirág,</div>
+          </div>
         </div>
       </div>
-      <div class="col-12 p-2 m-2">
-        <div class="row border-shadow py-3">
+
+      <div class="col-12 p-2">
+        <div class="m-2 py-3">
           <div id="carouselExampleCaptions2" class="carousel slide" data-ride="carousel">
             <ol class="carousel-indicators">
               <li data-target="#carouselExampleCaptions2" data-slide-to="0" class="active"></li>
@@ -237,7 +268,7 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-12 col-md-6 pt-2">
+      <div class="col-12 col-lg-6 pt-2">
         <div>
           <h3 class="m-2 blue px-2 text-center">Virágkosár</h3>
           <h5 class="mellow m-3 px-2">
@@ -251,11 +282,8 @@
             <h3 class="mellow m-3 px-2 text-center">Ára: <span style="color:red; font-style:italic;">3000 Ft-tól</span></h3>
           </div>
         </div>
-        <div class="m-4 p-4">
-          <a href="#contact"><button type="button" class="btn btn-outline-success btn-lg btn-block"><i class="far fa-envelope"></i> Ha kérdésed van, írj nekem!</button></a>
-        </div>
       </div>
-      <div class="col-12 col-md-6 pt-4">
+      <div class="col-12 col-lg-6 pt-4">
         <div class="termekleiras text-center py-3 m-2">
           <div class="row borbott text-left mx-2 p-2">
             <div class="col-12"><i class="fas fa-cut"></i> Kézműves termék</div>
@@ -281,9 +309,12 @@
             <div class="col-8">fa, hungorocell, művirág, gyöngy, szatén, strassz</div>
           </div>
         </div>
+        <div class="m-4 p-3">
+                <a href="#contact"><button type="button" class="btn btn-outline-success btn-lg btn-block"><i class="far fa-envelope"></i> Ha rendelni szeretnél vagy kérdésed van</button></a>
+          </div>
       </div>
-      <div class="col-12 p-2 m-2">
-        <div class="row border-shadow py-3">
+      <div class="col-12 p-2">
+        <div class="m-2 py-3">
           <div id="carouselExampleCaptions3" class="carousel slide" data-ride="carousel">
             <ol class="carousel-indicators">
               <li data-target="#carouselExampleCaptions3" data-slide-to="0" class="active"></li>

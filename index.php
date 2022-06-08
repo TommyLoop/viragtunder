@@ -27,6 +27,14 @@ $dispatcher = FastRoute\simpleDispatcher(function(FastRoute\RouteCollector $r) {
     $r->addRoute('GET', '/regisztracio', 'regisztracioHandler');
     $r->addRoute('GET', '/bejelentkezes', 'bejelentkezesHandler');
     $r->addRoute('GET', '/delete-product', 'orderDeleteHandler');
+    $r->addRoute('GET', '/user', 'userHandler');
+    $r->addRoute('GET', '/transportandpayment', 'paymentHandler');
+    $r->addRoute('GET', '/tools/images', 'imagesHandler');
+    $r->addRoute('GET', '/tools/backgrounds', 'backgroundsHandler');
+    $r->addRoute('GET', '/tools/colors', 'colorsHandler');
+    $r->addRoute('GET', '/tools/png', 'pngHandler');
+    $r->addRoute('GET', '/tools/other', 'otherHandler');
+    $r->addRoute('GET', '/ordersummary', 'ordersummaryHandler');
     $r->addRoute('POST', '/edited', 'editedHandler');
     $r->addRoute('POST', '/cart', 'cartSendHandler');
     $r->addRoute('POST', '/register', 'registrationHandler');
@@ -38,6 +46,8 @@ $dispatcher = FastRoute\simpleDispatcher(function(FastRoute\RouteCollector $r) {
     $r->addRoute('POST', '/usertransport', 'userTransportHandler');
     $r->addRoute('POST', '/personaledited', 'personaleditedHandler');
     $r->addRoute('POST', '/transportedited', 'transporteditedHandler');
+    $r->addRoute('POST', '/orderinvoicing', 'orderInvoicingHandler');
+    $r->addRoute('POST', '/ordersummary', 'formCheckHandler');
 
 
 });
@@ -87,7 +97,6 @@ function getConnection()
     );
 }
 function isLoggedIn(): bool
-
 {
     if (!isset($_COOKIE[session_name()])) { 
         return false; 
@@ -97,6 +106,15 @@ function isLoggedIn(): bool
         return false; 
     }
     return true;
+}
+
+function transportPaymentChecker($selected) {
+    $transportpayment = json_decode(file_get_contents('./data/transportpayment.json'), true);
+        array_push($transportpayment, $selected);
+        $json = json_encode($transportpayment, JSON_UNESCAPED_UNICODE);
+        file_put_contents('./data/transportpayment.json', $json);
+        header("Location: /ordersummary");
+    
 }
 
 
@@ -1070,9 +1088,11 @@ function bejelentkezesHandler()
         $statement = $pdo->prepare("SELECT * FROM users WHERE id=?");
         $statement->execute([$userId]);
         $user = $statement->fetch(PDO::FETCH_ASSOC);
+        $userEmail =  $user["email"];
         if($user["personalID"] === null){
             $loginTemplate = compileTemplate('./views/loggedin.php', [
                 "id" => $userId,
+                "email" => $userEmail,
                 "personal" => null,
                 "transport" => null,
                 "personalEdit" => $szerkesztes ?? "",
@@ -1109,6 +1129,7 @@ function bejelentkezesHandler()
             {
                 $loginTemplate = compileTemplate('./views/loggedin.php', [
                     "id" => $personalID,
+                    "email" => $userEmail,
                     "personal" => $personalID,
                     "personalEdit" => $szerkesztes ?? "",
                     "transportEdit" => $transportEdit ?? "",
@@ -1145,6 +1166,7 @@ function bejelentkezesHandler()
                 $transport = $statement->fetch(PDO::FETCH_ASSOC);
                 $loginTemplate = compileTemplate('./views/loggedin.php', [
                     "id" => $personalID,
+                    "email" => $userEmail,
                     "personal" => $personalID,
                     "transport" => $transportID,
                     "personalEdit" => $szerkesztes ?? "",
@@ -1181,14 +1203,7 @@ function bejelentkezesHandler()
                 ]);
                 return;
             }
-
-            
-
         }
-
-
-        
-        
     }
     
     $loginTemplate = compileTemplate('./views/login.php', [
@@ -1252,6 +1267,446 @@ function orderDeleteHandler()
     file_put_contents("./data/order.json", json_encode($products, JSON_UNESCAPED_UNICODE));
     header("Location: /cart#cart");
 }
+
+/* --------------------------------- "/user" -------------------------------- */
+
+function userHandler()
+{
+    
+   if(isLoggedIn()) {
+        $szerkesztes = $_GET["p-edit"];
+        $transportEdit = $_GET["t-edit"];
+        $userId = $_SESSION["userId"];
+        $pdo = getConnection();
+        $statement = $pdo->prepare("SELECT * FROM users WHERE id=?");
+        $statement->execute([$userId]);
+        $user = $statement->fetch(PDO::FETCH_ASSOC);
+        $userEmail =  $user["email"];
+        if($user["personalID"] === null){
+            $loginTemplate = compileTemplate('./views/user.php', [
+                "id" => $userId,
+                "email" => $userEmail,
+                "personal" => null,
+                "transport" => null,
+                "personalEdit" => $szerkesztes ?? "",
+                "transportEdit" => $transportEdit ?? "",
+            ] );
+            echo compileTemplate('./views/wrapper.php', [
+                'loginTemplate' => $loginTemplate,
+                'rattanTemplate' => null,
+                'heartboxTemplate' => null,
+                'szalasTemplate' => null,
+                'koszoruTemplate' => null,
+                "karacsonyTemplate" => null,
+                'bemutatoTemplate' => null,
+                'valentinTemplate' => null,
+                'innerIntroductionTemplate' => null,
+                'innerTemplate' => null,
+                'innerCartTemplate' => null,
+                'isAuthorized' => isLoggedIn(),
+                'isSuccess' => isset($_GET['kuldesSikeres'])
+                
+            ]);
+            return;
+            
+        }
+        else{
+            $szerkesztes = $_GET["p-edit"];
+            $transportEdit = $_GET["t-edit"];
+            $personalID = $user["personalID"];
+            $pdo = getConnection();
+            $statement = $pdo->prepare("SELECT * FROM `personal` WHERE id=?");
+            $statement->execute([$personalID]);
+            $personal = $statement->fetch(PDO::FETCH_ASSOC);
+            if($personal["transportID"] === null)
+            {
+                $loginTemplate = compileTemplate('./views/user.php', [
+                    "id" => $personalID,
+                    "email" => $userEmail,
+                    "personal" => $personalID,
+                    "personalEdit" => $szerkesztes ?? "",
+                    "transportEdit" => $transportEdit ?? "",
+                    "transport" => null,
+                    "name" => $personal["name"],
+                    "phone" => $personal["phoneNumber"],
+                    "taxnumber" => $personal["taxNumber"],
+                    "zipcode" => $personal["zipcode"],
+                    "city" => $personal["city"],
+                    "address" => $personal["address"]
+                ] );
+                echo compileTemplate('./views/wrapper.php', [
+                    'loginTemplate' => $loginTemplate,
+                    'rattanTemplate' => null,
+                    'heartboxTemplate' => null,
+                    'szalasTemplate' => null,
+                    'koszoruTemplate' => null,
+                    "karacsonyTemplate" => null,
+                    'bemutatoTemplate' => null,
+                    'valentinTemplate' => null,
+                    'innerIntroductionTemplate' => null,
+                    'innerTemplate' => null,
+                    'innerCartTemplate' => null,
+                    'isAuthorized' => isLoggedIn(),
+                    'isSuccess' => isset($_GET['kuldesSikeres'])
+                    
+                ]);
+                return;
+            }else{
+                $transportID = $personal["transportID"];
+                $pdo = getConnection();
+                $statement = $pdo->prepare("SELECT * FROM `transport` WHERE id=?");
+                $statement->execute([$transportID]);
+                $transport = $statement->fetch(PDO::FETCH_ASSOC);
+                $loginTemplate = compileTemplate('./views/user.php', [
+                    "id" => $personalID,
+                    "email" => $userEmail,
+                    "personal" => $personalID,
+                    "transport" => $transportID,
+                    "personalEdit" => $szerkesztes ?? "",
+                    "transportEdit" => $transportEdit ?? "",
+                    "name" => $personal["name"],
+                    "phone" => $personal["phoneNumber"],
+                    "taxnumber" => $personal["taxNumber"],
+                    "zipcode" => $personal["zipcode"],
+                    "city" => $personal["city"],
+                    "address" => $personal["address"],
+                    "transportName" => $transport["name"],
+                    "transportPhone" => $transport["phone"],
+                    "transportZipcode" => $transport["zipcode"],
+                    "transportCity" => $transport["city"],
+                    "transportAddress" => $transport["address"],
+                    "transportComment" => $transport["comment"],
+
+                ] );
+                echo compileTemplate('./views/wrapper.php', [
+                    'loginTemplate' => $loginTemplate,
+                    'rattanTemplate' => null,
+                    'heartboxTemplate' => null,
+                    'szalasTemplate' => null,
+                    'koszoruTemplate' => null,
+                    "karacsonyTemplate" => null,
+                    'bemutatoTemplate' => null,
+                    'valentinTemplate' => null,
+                    'innerIntroductionTemplate' => null,
+                    'innerTemplate' => null,
+                    'innerCartTemplate' => null,
+                    'isAuthorized' => isLoggedIn(),
+                    'isSuccess' => isset($_GET['kuldesSikeres'])
+                    
+                ]);
+                return;
+            }
+        }
+    }
+    
+    $userTemplate = compileTemplate('./views/user.php', [
+        "message" => "",
+        "email" => ""
+    ]);
+    echo compileTemplate('./views/wrapper.php', [
+        'innerCartTemplate' => $userTemplate,
+        'rattanTemplate' => null,
+        'heartboxTemplate' => null,
+        'szalasTemplate' => null,
+        'koszoruTemplate' => null,
+        "karacsonyTemplate" => null,
+        'bemutatoTemplate' => null,
+        'valentinTemplate' => null,
+        'innerIntroductionTemplate' => null,
+        'loginTemplate' => null,
+        'innerTemplate' => null,
+        'isAuthorized' => isLoggedIn(),
+        'isSuccess' => isset($_GET['kuldesSikeres'])
+    ]); 
+    
+}
+
+/* ------------------------- "/transportandpayment" ------------------------- */
+
+function  paymentHandler() {
+    $transportpayment = json_decode(file_get_contents("./data/transportpayment.json"), true);
+    $transportpayment = [];
+    $json = json_encode($transportpayment, JSON_UNESCAPED_UNICODE);
+    file_put_contents('./data/transportpayment.json', $json);
+
+    if(isLoggedIn()) {
+        $szerkesztes = $_GET["p-edit"];
+        $transportEdit = $_GET["t-edit"];
+        $userId = $_SESSION["userId"];
+        $pdo = getConnection();
+        $statement = $pdo->prepare("SELECT * FROM users WHERE id=?");
+        $statement->execute([$userId]);
+        $user = $statement->fetch(PDO::FETCH_ASSOC);
+        $userEmail =  $user["email"];
+        if($user["personalID"] === null){
+            $loginTemplate = compileTemplate('./views/paymentandtransport.php', [
+                "id" => $userId,
+                "email" => $userEmail,
+                "personal" => null,
+                "transport" => null,
+                "personalEdit" => $szerkesztes ?? "",
+                "transportEdit" => $transportEdit ?? "",
+            ] );
+            echo compileTemplate('./views/wrapper.php', [
+                'loginTemplate' => $loginTemplate,
+                'rattanTemplate' => null,
+                'heartboxTemplate' => null,
+                'szalasTemplate' => null,
+                'koszoruTemplate' => null,
+                "karacsonyTemplate" => null,
+                'bemutatoTemplate' => null,
+                'valentinTemplate' => null,
+                'innerIntroductionTemplate' => null,
+                'innerTemplate' => null,
+                'innerCartTemplate' => null,
+                'isAuthorized' => isLoggedIn(),
+                'isSuccess' => isset($_GET['kuldesSikeres'])
+                
+            ]);
+            return;
+            
+        }
+        else{
+            $szerkesztes = $_GET["p-edit"];
+            $transportEdit = $_GET["t-edit"];
+            $personalID = $user["personalID"];
+            $pdo = getConnection();
+            $statement = $pdo->prepare("SELECT * FROM `personal` WHERE id=?");
+            $statement->execute([$personalID]);
+            $personal = $statement->fetch(PDO::FETCH_ASSOC);
+            if($personal["transportID"] === null)
+            {
+                $loginTemplate = compileTemplate('./views/paymentandtransport.php', [
+                    "id" => $personalID,
+                    "email" => $userEmail,
+                    "personal" => $personalID,
+                    "personalEdit" => $szerkesztes ?? "",
+                    "transportEdit" => $transportEdit ?? "",
+                    "transport" => null,
+                    "name" => $personal["name"],
+                    "phone" => $personal["phoneNumber"],
+                    "taxnumber" => $personal["taxNumber"],
+                    "zipcode" => $personal["zipcode"],
+                    "city" => $personal["city"],
+                    "address" => $personal["address"]
+                ] );
+                echo compileTemplate('./views/wrapper.php', [
+                    'loginTemplate' => $loginTemplate,
+                    'rattanTemplate' => null,
+                    'heartboxTemplate' => null,
+                    'szalasTemplate' => null,
+                    'koszoruTemplate' => null,
+                    "karacsonyTemplate" => null,
+                    'bemutatoTemplate' => null,
+                    'valentinTemplate' => null,
+                    'innerIntroductionTemplate' => null,
+                    'innerTemplate' => null,
+                    'innerCartTemplate' => null,
+                    'isAuthorized' => isLoggedIn(),
+                    'isSuccess' => isset($_GET['kuldesSikeres'])
+                    
+                ]);
+                return;
+            }else{
+                $transportID = $personal["transportID"];
+                $pdo = getConnection();
+                $statement = $pdo->prepare("SELECT * FROM `transport` WHERE id=?");
+                $statement->execute([$transportID]);
+                $transport = $statement->fetch(PDO::FETCH_ASSOC);
+                $loginTemplate = compileTemplate('./views/paymentandtransport.php', [
+                    "id" => $personalID,
+                    "email" => $userEmail,
+                    "personal" => $personalID,
+                    "transport" => $transportID,
+                    "personalEdit" => $szerkesztes ?? "",
+                    "transportEdit" => $transportEdit ?? "",
+                    "name" => $personal["name"],
+                    "phone" => $personal["phoneNumber"],
+                    "taxnumber" => $personal["taxNumber"],
+                    "zipcode" => $personal["zipcode"],
+                    "city" => $personal["city"],
+                    "address" => $personal["address"],
+                    "transportName" => $transport["name"],
+                    "transportPhone" => $transport["phone"],
+                    "transportZipcode" => $transport["zipcode"],
+                    "transportCity" => $transport["city"],
+                    "transportAddress" => $transport["address"],
+                    "transportComment" => $transport["comment"],
+
+                ] );
+                echo compileTemplate('./views/wrapper.php', [
+                    'loginTemplate' => $loginTemplate,
+                    'rattanTemplate' => null,
+                    'heartboxTemplate' => null,
+                    'szalasTemplate' => null,
+                    'koszoruTemplate' => null,
+                    "karacsonyTemplate" => null,
+                    'bemutatoTemplate' => null,
+                    'valentinTemplate' => null,
+                    'innerIntroductionTemplate' => null,
+                    'innerTemplate' => null,
+                    'innerCartTemplate' => null,
+                    'isAuthorized' => isLoggedIn(),
+                    'isSuccess' => isset($_GET['kuldesSikeres'])
+                    
+                ]);
+                return;
+            }
+        }
+    }
+    
+    $paymentTemplate = compileTemplate('./views/paymentandtransport.php', [
+        "message" => "",
+        "email" => ""
+    ]);
+    echo compileTemplate('./views/wrapper.php', [
+        'innerCartTemplate' => $paymentTemplate,
+        'rattanTemplate' => null,
+        'heartboxTemplate' => null,
+        'szalasTemplate' => null,
+        'koszoruTemplate' => null,
+        "karacsonyTemplate" => null,
+        'bemutatoTemplate' => null,
+        'valentinTemplate' => null,
+        'innerIntroductionTemplate' => null,
+        'loginTemplate' => null,
+        'innerTemplate' => null,
+        'isAuthorized' => isLoggedIn(),
+        'isSuccess' => isset($_GET['kuldesSikeres'])
+    ]); 
+    
+}
+
+/* -------------------------------- "/tools/images" -------------------------------- */
+
+function imagesHandler() {
+    $imageTemplate = compileTemplate('./views/images.php', []);
+    echo compileTemplate('./views/tools.php', [
+        'toolsTemplate' => $imageTemplate
+    ]);
+    
+} 
+
+/* --------------------------- "/tools/background" -------------------------- */
+
+function backgroundsHandler() {
+    $backgroundTemplate = compileTemplate('./views/backgrounds.php', []);
+    echo compileTemplate('./views/tools.php', [
+        'toolsTemplate' => $backgroundTemplate
+    ]);
+}
+
+/* ----------------------------- "/tools/colors" ---------------------------- */
+
+function colorsHandler() {
+    $colorTemplate = compileTemplate('./views/colors.php', []);
+    echo compileTemplate('./views/tools.php', [
+        'toolsTemplate' => $colorTemplate
+    ]);
+}
+
+/* ------------------------------ "/tools/png" ------------------------------ */
+
+function pngHandler() {
+    $pngTemplate = compileTemplate('./views/png.php', []);
+    echo compileTemplate('./views/tools.php', [
+        'toolsTemplate' => $pngTemplate
+    ]);
+}
+
+/* ----------------------------- "/tools/other" ----------------------------- */
+
+function otherHandler() {
+    $otherTemplate = compileTemplate('./views/other.php', []);
+    echo compileTemplate('./views/tools.php', [
+        'toolsTemplate' => $otherTemplate
+    ]);
+}
+
+/* ----------------------------- "/ordersummary" ---------------------------- */
+
+function ordersummaryHandler(){
+    if(isLoggedIn()) {
+        $userId = $_SESSION["userId"];
+        $pdo = getConnection();
+        $statement = $pdo->prepare("SELECT * FROM users WHERE id=?");
+        $statement->execute([$userId]);
+        $user = $statement->fetch(PDO::FETCH_ASSOC);
+        $userEmail =  $user["email"];
+            $personalID = $user["personalID"];
+            $pdo = getConnection();
+            $statement = $pdo->prepare("SELECT * FROM `personal` WHERE id=?");
+            $statement->execute([$personalID]);
+            $personal = $statement->fetch(PDO::FETCH_ASSOC);
+                $transportID = $personal["transportID"];
+                $pdo = getConnection();
+                $statement = $pdo->prepare("SELECT * FROM `transport` WHERE id=?");
+                $statement->execute([$transportID]);
+                $transport = $statement->fetch(PDO::FETCH_ASSOC);
+                $ordersummaryTemplate = compileTemplate('./views/ordersummary.php', [
+                    "id" => $personalID,
+                    "email" => $userEmail,
+                    "personal" => $personalID,
+                    "transport" => $transportID,
+                    "personalEdit" => $szerkesztes ?? "",
+                    "transportEdit" => $transportEdit ?? "",
+                    "name" => $personal["name"],
+                    "phone" => $personal["phoneNumber"],
+                    "taxnumber" => $personal["taxNumber"],
+                    "zipcode" => $personal["zipcode"],
+                    "city" => $personal["city"],
+                    "address" => $personal["address"],
+                    "transportName" => $transport["name"],
+                    "transportPhone" => $transport["phone"],
+                    "transportZipcode" => $transport["zipcode"],
+                    "transportCity" => $transport["city"],
+                    "transportAddress" => $transport["address"],
+                    "transportComment" => $transport["comment"],
+
+                ] );
+                echo compileTemplate('./views/wrapper.php', [
+                    'loginTemplate' => $ordersummaryTemplate,
+                    'rattanTemplate' => null,
+                    'heartboxTemplate' => null,
+                    'szalasTemplate' => null,
+                    'koszoruTemplate' => null,
+                    "karacsonyTemplate" => null,
+                    'bemutatoTemplate' => null,
+                    'valentinTemplate' => null,
+                    'innerIntroductionTemplate' => null,
+                    'innerTemplate' => null,
+                    'innerCartTemplate' => null,
+                    'isAuthorized' => isLoggedIn(),
+                    'isSuccess' => isset($_GET['kuldesSikeres'])
+                    
+                ]);
+                return;
+    }
+
+    
+    $ordersummaryTemplate = compileTemplate('./views/ordersummary.php', [
+        "message" => "",
+        "email" => ""
+    ]);
+    echo compileTemplate('./views/wrapper.php', [
+        'innerCartTemplate' => $ordersummaryTemplate,
+        'rattanTemplate' => null,
+        'heartboxTemplate' => null,
+        'szalasTemplate' => null,
+        'koszoruTemplate' => null,
+        "karacsonyTemplate" => null,
+        'bemutatoTemplate' => null,
+        'valentinTemplate' => null,
+        'innerIntroductionTemplate' => null,
+        'loginTemplate' => null,
+        'innerTemplate' => null,
+        'isAuthorized' => isLoggedIn(),
+        'isSuccess' => isset($_GET['kuldesSikeres'])
+    ]); 
+    
+}
+
+
 
 /* -------------------------------------------------------------------------- */
 /*                      Rendszerfüggvények "POST" method                      */
@@ -1413,7 +1868,7 @@ function registrationHandler()
         time(),
         null
     ]);
-    $regisztracioTemplate = compileTemplate('./views/register.php', [
+    $regisztracioTemplate = compileTemplate('./views/login.php', [
         'message' => "successful"
     ]);
     echo compileTemplate('./views/wrapper.php', [
@@ -1432,13 +1887,14 @@ function registrationHandler()
         'isSuccess' => isset($_GET['kuldesSikeres'])
     ]);
 
-    header('Location: /regisztracio'); 
+    header('Location: /bejelentkezes'); 
 }
 
 /* -------------------------------- "/login" -------------------------------- */
 
 function loginHandler()
 {
+    $Location = $_POST["location"];
     $pdo = getConnection();
     $statement = $pdo->prepare("SELECT * FROM users WHERE email = ?");
     $statement->execute([$_POST["email"]]);
@@ -1489,7 +1945,7 @@ function loginHandler()
     }
     session_start();
     $_SESSION['userId'] = $user["id"];
-    header('Location: /bejelentkezes');
+    header('Location: /' . $Location);
     
 }
 
@@ -1501,7 +1957,7 @@ function logoutHandler()
     $params = session_get_cookie_params(); 
     setcookie(session_name(),  '', 0, $params['path'], $params['domain'], $params['secure'], isset($params['httponly']));
     session_destroy(); 
-    header('Location: /bejelentkezes'); 
+    header('Location: /'); 
 }
 
 
@@ -1596,18 +2052,147 @@ function userInvoicingHandler()
 {
     $userID = $_POST["id"];
     $pdo = getConnection();
+    $username = filter_var($_POST["username"], FILTER_SANITIZE_STRING);
+    $userEmail = filter_var($_POST["email"], FILTER_SANITIZE_STRING);
+    $zipcode = filter_var($_POST["zipcode"], FILTER_SANITIZE_STRING);
+    $city = filter_var($_POST["city"], FILTER_SANITIZE_STRING);
+    $address = filter_var($_POST["address"], FILTER_SANITIZE_STRING);
+    $phonenumber = filter_var($_POST["phonenumber"], FILTER_SANITIZE_STRING);
+    $taxnumber = filter_var($_POST["taxnumber"], FILTER_SANITIZE_STRING);
+    if(empty($username)) {
+        $loginTemplate = compileTemplate('./views/loggedin.php', [
+            "message" => "invalid",
+            "id" => $userID,
+        ]);
+        echo compileTemplate('./views/wrapper.php', [
+                'loginTemplate' => $loginTemplate,
+                'rattanTemplate' => null,
+                'heartboxTemplate' => null,
+                'szalasTemplate' => null,
+                'koszoruTemplate' => null,
+                "karacsonyTemplate" => null,
+                'bemutatoTemplate' => null,
+                'valentinTemplate' => null,
+                'innerIntroductionTemplate' => null,
+                'innerTemplate' => null,
+                'innerCartTemplate' => null,
+                'isAuthorized' => isLoggedIn(),
+                'isSuccess' => isset($_GET['kuldesSikeres'])
+        ]);
+        header('Location: /bejelentkezes');
+        exit;
+    };
+    if(empty($zipcode)) {
+        $loginTemplate = compileTemplate('./views/loggedin.php', [
+            "message" => "invalid",
+            "id" => $userID
+        ]);
+        echo compileTemplate('./views/wrapper.php', [
+                'loginTemplate' => $loginTemplate,
+                'rattanTemplate' => null,
+                'heartboxTemplate' => null,
+                'szalasTemplate' => null,
+                'koszoruTemplate' => null,
+                "karacsonyTemplate" => null,
+                'bemutatoTemplate' => null,
+                'valentinTemplate' => null,
+                'innerIntroductionTemplate' => null,
+                'innerTemplate' => null,
+                'innerCartTemplate' => null,
+                'isAuthorized' => isLoggedIn(),
+                'isSuccess' => isset($_GET['kuldesSikeres'])
+        ]);
+        header('Location: /bejelentkezes');
+        exit;
+    };
+    if(empty($city)) {
+        $loginTemplate = compileTemplate('./views/loggedin.php', [
+            "message" => "invalid",
+            "id" => $userID
+        ]);
+        echo compileTemplate('./views/wrapper.php', [
+                'loginTemplate' => $loginTemplate,
+                'rattanTemplate' => null,
+                'heartboxTemplate' => null,
+                'szalasTemplate' => null,
+                'koszoruTemplate' => null,
+                "karacsonyTemplate" => null,
+                'bemutatoTemplate' => null,
+                'valentinTemplate' => null,
+                'innerIntroductionTemplate' => null,
+                'innerTemplate' => null,
+                'innerCartTemplate' => null,
+                'isAuthorized' => isLoggedIn(),
+                'isSuccess' => isset($_GET['kuldesSikeres'])
+        ]);
+        header('Location: /bejelentkezes');
+        exit;
+    };
+    if(empty($address)) {
+        $loginTemplate = compileTemplate('./views/loggedin.php', [
+            "message" => "invalid",
+            "id" => $userID
+        ]);
+        echo compileTemplate('./views/wrapper.php', [
+                'loginTemplate' => $loginTemplate,
+                'rattanTemplate' => null,
+                'heartboxTemplate' => null,
+                'szalasTemplate' => null,
+                'koszoruTemplate' => null,
+                "karacsonyTemplate" => null,
+                'bemutatoTemplate' => null,
+                'valentinTemplate' => null,
+                'innerIntroductionTemplate' => null,
+                'innerTemplate' => null,
+                'innerCartTemplate' => null,
+                'isAuthorized' => isLoggedIn(),
+                'isSuccess' => isset($_GET['kuldesSikeres'])
+        ]);
+        header('Location: /bejelentkezes');
+        exit;
+    };
+    if(strlen($zipcode) !== 4) {
+        $loginTemplate = compileTemplate('./views/loggedin.php', [
+            "message" => "not4",
+            "id" => $userID
+        ]);
+        echo compileTemplate('./views/wrapper.php', [
+                'loginTemplate' => $loginTemplate,
+                'rattanTemplate' => null,
+                'heartboxTemplate' => null,
+                'szalasTemplate' => null,
+                'koszoruTemplate' => null,
+                "karacsonyTemplate" => null,
+                'bemutatoTemplate' => null,
+                'valentinTemplate' => null,
+                'innerIntroductionTemplate' => null,
+                'innerTemplate' => null,
+                'innerCartTemplate' => null,
+                'isAuthorized' => isLoggedIn(),
+                'isSuccess' => isset($_GET['kuldesSikeres'])
+        ]);
+        header('Location: /bejelentkezes');
+        exit;
+    };
+    
+   
+    $personalEmail = $pdo->prepare("SELECT email FROM users WHERE id = ?");
+    $personalEmail->execute([$userID]);
+    $email = $personalEmail->fetchAll(PDO::FETCH_ASSOC);
+    $userEmail = $email[0]["email"];
     $statement = $pdo->prepare("INSERT INTO `personal` 
-    (`name`, `zipcode`, `city`, `address`, `phoneNumber`, `taxNumber`, `transportID`) 
+    (`name`, `zipcode`, `city`, `address`, `phoneNumber`, `taxNumber`, `email`, `transportID`) 
     VALUES 
-    (?, ?, ?, ?, ?, ?, ?);");
+    (?, ?, ?, ?, ?, ?, ?, ?);");
     $statement->execute([
-        $_POST["username"],
-        $_POST["zipcode"], 
-        $_POST["city"], 
-        $_POST["address"], 
-        $_POST["phonenumber"], 
-        $_POST["taxnumber"], 
-        null
+    $username,
+    $zipcode, 
+    $city, 
+    $address, 
+    $phonenumber, 
+    $taxnumber,
+    $userEmail,
+    null
 
     ]);
     $newrecord = $pdo->prepare("SELECT * FROM `personal` ");
@@ -1622,6 +2207,8 @@ function userInvoicingHandler()
         $userID
     ]);
     header('Location: /bejelentkezes');
+  
+   
 }
 
 /* ---------------------------- "/usertransport" ---------------------------- */
@@ -1630,17 +2217,138 @@ function userTransportHandler()
 {
     $userID = $_POST["id"];
     $pdo = getConnection();
+    $username = filter_var($_POST["username"], FILTER_SANITIZE_STRING);
+    $phonenumber = filter_var($_POST["phonenumber"], FILTER_SANITIZE_STRING);
+    $zipcode = filter_var($_POST["zipcode"], FILTER_SANITIZE_STRING);
+    $city = filter_var($_POST["city"], FILTER_SANITIZE_STRING);
+    $address = filter_var($_POST["address"], FILTER_SANITIZE_STRING);
+    $comment = filter_var($_POST["content"], FILTER_SANITIZE_STRING);
+    if(empty($username)) {
+        $loginTemplate = compileTemplate('./views/loggedin.php', [
+            "message" => "invalid2",
+            "id" => $userID,
+        ]);
+        echo compileTemplate('./views/wrapper.php', [
+                'loginTemplate' => $loginTemplate,
+                'rattanTemplate' => null,
+                'heartboxTemplate' => null,
+                'szalasTemplate' => null,
+                'koszoruTemplate' => null,
+                "karacsonyTemplate" => null,
+                'bemutatoTemplate' => null,
+                'valentinTemplate' => null,
+                'innerIntroductionTemplate' => null,
+                'innerTemplate' => null,
+                'innerCartTemplate' => null,
+                'isAuthorized' => isLoggedIn(),
+                'isSuccess' => isset($_GET['kuldesSikeres'])
+        ]);
+        header('Location: /bejelentkezes');
+        exit;
+    };
+    if(empty($zipcode)) {
+        $loginTemplate = compileTemplate('./views/loggedin.php', [
+            "message" => "invalid2",
+            "id" => $userID
+        ]);
+        echo compileTemplate('./views/wrapper.php', [
+                'loginTemplate' => $loginTemplate,
+                'rattanTemplate' => null,
+                'heartboxTemplate' => null,
+                'szalasTemplate' => null,
+                'koszoruTemplate' => null,
+                "karacsonyTemplate" => null,
+                'bemutatoTemplate' => null,
+                'valentinTemplate' => null,
+                'innerIntroductionTemplate' => null,
+                'innerTemplate' => null,
+                'innerCartTemplate' => null,
+                'isAuthorized' => isLoggedIn(),
+                'isSuccess' => isset($_GET['kuldesSikeres'])
+        ]);
+        header('Location: /bejelentkezes');
+        exit;
+    };
+    if(empty($city)) {
+        $loginTemplate = compileTemplate('./views/loggedin.php', [
+            "message" => "invalid2",
+            "id" => $userID
+        ]);
+        echo compileTemplate('./views/wrapper.php', [
+                'loginTemplate' => $loginTemplate,
+                'rattanTemplate' => null,
+                'heartboxTemplate' => null,
+                'szalasTemplate' => null,
+                'koszoruTemplate' => null,
+                "karacsonyTemplate" => null,
+                'bemutatoTemplate' => null,
+                'valentinTemplate' => null,
+                'innerIntroductionTemplate' => null,
+                'innerTemplate' => null,
+                'innerCartTemplate' => null,
+                'isAuthorized' => isLoggedIn(),
+                'isSuccess' => isset($_GET['kuldesSikeres'])
+        ]);
+        header('Location: /bejelentkezes');
+        exit;
+    };
+    if(empty($address)) {
+        $loginTemplate = compileTemplate('./views/loggedin.php', [
+            "message" => "invalid2",
+            "id" => $userID
+        ]);
+        echo compileTemplate('./views/wrapper.php', [
+                'loginTemplate' => $loginTemplate,
+                'rattanTemplate' => null,
+                'heartboxTemplate' => null,
+                'szalasTemplate' => null,
+                'koszoruTemplate' => null,
+                "karacsonyTemplate" => null,
+                'bemutatoTemplate' => null,
+                'valentinTemplate' => null,
+                'innerIntroductionTemplate' => null,
+                'innerTemplate' => null,
+                'innerCartTemplate' => null,
+                'isAuthorized' => isLoggedIn(),
+                'isSuccess' => isset($_GET['kuldesSikeres'])
+        ]);
+        header('Location: /bejelentkezes');
+        exit;
+    };
+    if(strlen($zipcode) !== 4) {
+        $loginTemplate = compileTemplate('./views/loggedin.php', [
+            "message" => "not42",
+            "id" => $userID
+        ]);
+        echo compileTemplate('./views/wrapper.php', [
+                'loginTemplate' => $loginTemplate,
+                'rattanTemplate' => null,
+                'heartboxTemplate' => null,
+                'szalasTemplate' => null,
+                'koszoruTemplate' => null,
+                "karacsonyTemplate" => null,
+                'bemutatoTemplate' => null,
+                'valentinTemplate' => null,
+                'innerIntroductionTemplate' => null,
+                'innerTemplate' => null,
+                'innerCartTemplate' => null,
+                'isAuthorized' => isLoggedIn(),
+                'isSuccess' => isset($_GET['kuldesSikeres'])
+        ]);
+        header('Location: /bejelentkezes');
+        exit;
+    };
     $statement = $pdo->prepare("INSERT INTO `transport` 
     (`name`, `phone`, `zipcode`, `city`, `address`,  `comment`) 
     VALUES 
     (?, ?, ?, ?, ?, ?);");
     $statement->execute([
-        $_POST["username"],
-        $_POST["phonenumber"],
-        $_POST["zipcode"], 
-        $_POST["city"], 
-        $_POST["address"], 
-        $_POST["content"]
+        $username,
+        $phonenumber,
+        $zipcode, 
+        $city, 
+        $address, 
+        $comment
 
     ]);
     $newrecord = $pdo->prepare("SELECT * FROM `transport` ");
@@ -1662,6 +2370,7 @@ function userTransportHandler()
 function personaleditedHandler()
 {
    $personalID = $_POST["personalID"];
+   $location = $_POST["location"];
    $column = $_POST["column"];
    $newValue = $_POST["$column"];
    $pdo = getConnection();
@@ -1672,7 +2381,7 @@ function personaleditedHandler()
     $newValue,
     $personalID
    ]);
-   header('Location: /bejelentkezes');
+   header('Location: /' . $location);
    
 }
 
@@ -1681,6 +2390,7 @@ function personaleditedHandler()
 function transporteditedHandler()
 {
    $transportID = $_POST["transportID"];
+   $location = $_POST["location"];
    $column = $_POST["column"];
    $newValue = $_POST["$column"];
    $pdo = getConnection();
@@ -1691,13 +2401,215 @@ function transporteditedHandler()
     $newValue,
     $transportID
    ]);
-   header('Location: /bejelentkezes');
+   header('Location: /' . $location);
    
 }
 
+/* ---------------------------- "/orderinvoicing" --------------------------- */
 
+function orderInvoicingHandler()
+{
+    $szerkesztes = $_GET["p-edit"];
+    $transportEdit = $_GET["t-edit"];
+    $userID = $_POST["id"];
+    $pdo = getConnection();
+    $username = filter_var($_POST["username"], FILTER_SANITIZE_STRING);
+    $zipcode = filter_var($_POST["zipcode"], FILTER_SANITIZE_STRING);
+    $city = filter_var($_POST["city"], FILTER_SANITIZE_STRING);
+    $address = filter_var($_POST["address"], FILTER_SANITIZE_STRING);
+    $phonenumber = filter_var($_POST["phonenumber"], FILTER_SANITIZE_STRING);
+    $taxnumber = filter_var($_POST["taxnumber"], FILTER_SANITIZE_STRING);
+    if(empty($username)) {
+        $loginTemplate = compileTemplate('./views/user.php', [
+            "message" => "invalid",
+            "id" => $userID,
+        ]);
+        echo compileTemplate('./views/wrapper.php', [
+                'loginTemplate' => $loginTemplate,
+                'rattanTemplate' => null,
+                'heartboxTemplate' => null,
+                'szalasTemplate' => null,
+                'koszoruTemplate' => null,
+                "karacsonyTemplate" => null,
+                'bemutatoTemplate' => null,
+                'valentinTemplate' => null,
+                'innerIntroductionTemplate' => null,
+                'innerTemplate' => null,
+                'innerCartTemplate' => null,
+                'isAuthorized' => isLoggedIn(),
+                'isSuccess' => isset($_GET['kuldesSikeres'])
+        ]);
+        header('Location: /user');
+        exit;
+    };
+    if(empty($zipcode)) {
+        $loginTemplate = compileTemplate('./views/user.php', [
+            "message" => "invalid",
+            "id" => $userID
+        ]);
+        echo compileTemplate('./views/wrapper.php', [
+                'loginTemplate' => $loginTemplate,
+                'rattanTemplate' => null,
+                'heartboxTemplate' => null,
+                'szalasTemplate' => null,
+                'koszoruTemplate' => null,
+                "karacsonyTemplate" => null,
+                'bemutatoTemplate' => null,
+                'valentinTemplate' => null,
+                'innerIntroductionTemplate' => null,
+                'innerTemplate' => null,
+                'innerCartTemplate' => null,
+                'isAuthorized' => isLoggedIn(),
+                'isSuccess' => isset($_GET['kuldesSikeres'])
+        ]);
+        header('Location: /user');
+        exit;
+    };
+    if(empty($city)) {
+        $loginTemplate = compileTemplate('./views/user.php', [
+            "message" => "invalid",
+            "id" => $userID
+        ]);
+        echo compileTemplate('./views/wrapper.php', [
+                'loginTemplate' => $loginTemplate,
+                'rattanTemplate' => null,
+                'heartboxTemplate' => null,
+                'szalasTemplate' => null,
+                'koszoruTemplate' => null,
+                "karacsonyTemplate" => null,
+                'bemutatoTemplate' => null,
+                'valentinTemplate' => null,
+                'innerIntroductionTemplate' => null,
+                'innerTemplate' => null,
+                'innerCartTemplate' => null,
+                'isAuthorized' => isLoggedIn(),
+                'isSuccess' => isset($_GET['kuldesSikeres'])
+        ]);
+        header('Location: /user');
+        exit;
+    };
+    if(empty($address)) {
+        $loginTemplate = compileTemplate('./views/user.php', [
+            "message" => "invalid",
+            "id" => $userID
+        ]);
+        echo compileTemplate('./views/wrapper.php', [
+                'loginTemplate' => $loginTemplate,
+                'rattanTemplate' => null,
+                'heartboxTemplate' => null,
+                'szalasTemplate' => null,
+                'koszoruTemplate' => null,
+                "karacsonyTemplate" => null,
+                'bemutatoTemplate' => null,
+                'valentinTemplate' => null,
+                'innerIntroductionTemplate' => null,
+                'innerTemplate' => null,
+                'innerCartTemplate' => null,
+                'isAuthorized' => isLoggedIn(),
+                'isSuccess' => isset($_GET['kuldesSikeres'])
+        ]);
+        header('Location: /user');
+        exit;
+    };
+    if(strlen($zipcode) !== 4) {
+        $loginTemplate = compileTemplate('./views/user.php', [
+            "message" => "not4",
+            "id" => $userID
+        ]);
+        echo compileTemplate('./views/wrapper.php', [
+                'loginTemplate' => $loginTemplate,
+                'rattanTemplate' => null,
+                'heartboxTemplate' => null,
+                'szalasTemplate' => null,
+                'koszoruTemplate' => null,
+                "karacsonyTemplate" => null,
+                'bemutatoTemplate' => null,
+                'valentinTemplate' => null,
+                'innerIntroductionTemplate' => null,
+                'innerTemplate' => null,
+                'innerCartTemplate' => null,
+                'isAuthorized' => isLoggedIn(),
+                'isSuccess' => isset($_GET['kuldesSikeres'])
+        ]);
+        header('Location: /user');
+        exit;
+    };
+    if(isLoggedIn()){
+        
+        $personalEmail = $pdo->prepare("SELECT email FROM users WHERE id = ?");
+        $personalEmail->execute([$userID]);
+        $email = $personalEmail->fetchAll(PDO::FETCH_ASSOC);
+        $userEmail = $email[0]["email"];
+        $statement = $pdo->prepare("INSERT INTO `personal` 
+        (`name`, `zipcode`, `city`, `address`, `phoneNumber`, `taxNumber`, `email`, `transportID`) 
+        VALUES 
+        (?, ?, ?, ?, ?, ?, ?, ?);");
+        $statement->execute([
+        $username,
+        $zipcode, 
+        $city, 
+        $address, 
+        $phonenumber, 
+        $taxnumber,
+        $userEmail,
+        null
 
+        ]);
+        $newrecord = $pdo->prepare("SELECT * FROM `personal` ");
+        $newrecord->execute();
+        $personal = $newrecord->fetchAll(PDO::FETCH_ASSOC);
+        $lastId = end($personal);
+        $personalID = $pdo->prepare("UPDATE `users`
+        SET personalID = ?
+        WHERE id = ?");
+        $personalID->execute([
+            $lastId["id"],
+            $userID
+        ]);
+        header('Location: /user');
+  
+    } 
+    header('Location: /user');
+}
 
+/* ----------------------------- "/ordersummary" ---------------------------- */
+
+function formCheckHandler(){
+    $transport = $_POST["transport"];
+    $payment = $_POST["payment"];
+    if($transport === "mpl"){
+        $selected = [
+            "content" => "MPL-es házhozszállítás:",
+            "price" => 1000
+        ];
+        transportPaymentChecker($selected);
+        if($payment === "cash") {
+            $selected = [
+                "content" => "Bankkártyás utalással:"
+            ];
+            transportPaymentChecker($selected);
+        }
+    } else {
+        $selected = [
+            "content" => "Személyes átvétel:",
+            "price" => 0
+        ];
+        transportPaymentChecker($selected);
+        if($payment === "cash") {
+            $selected = [
+                "content" => "Kézpénzes fizetés (csak személyes átvételnél):"
+            ];
+            transportPaymentChecker($selected);
+        }
+    }
+    if($payment === "card"){
+        $selected = [
+            "content" => "Bankkártyás utalással:"
+        ];
+        transportPaymentChecker($selected);
+    }
+    
+}
 
 
 

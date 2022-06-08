@@ -103,17 +103,17 @@
       
       <div class="container">
         <div class="col12">
-        <div class="col-12 px-5 text-center"><img class="img-fluid col-3 px-3" src="./public/img/logo5.png" alt=""></div>
+        <div class="col-12 px-5 text-center"><img class="img-fluid col-md-3 px-3" src="./public/img/logo5.png" alt=""></div>
         </div>
       </div>
       
       <div class="container">
-        <div class="card card-body backcol2 pt-4" id="contact">
-          <div class="row p-2">
+        <div class="backcol2 pt-4" id="contact">
+          <div class="row m-2">
             <div class="col-12 col-md-12">
-              <img class="img-fluid m-2 p-2" src="../public/img/kapcsolat.jpg" alt="">
+              <img class="img-fluid py-4" src="../public/img/kapcsolat.jpg" alt="">
             </div>
-            <div class="col-12 col-lg-6 card img-hover-zoom">
+            <div class="col-12 col-lg-6 p-2 termekleiras img-hover-zoom">
               <h1 class="py-3">Rehákné Török Andrea</h1>
               <h5 class="mellow"><i class="fas fa-phone-square-alt"></i> Telefonszám:</h5>
               <h5 class="blue">+30/951-4959</h5>
@@ -158,15 +158,53 @@
           <div class="row px-lg-3">
             <div class="col-12 col-lg-5 pl-5"><img class="img-fluid col-7" src="./public/img/logo2.png" alt=""></div>
             <div class="col-12 col-lg-7 row">
-              <div class="col-12 row px-lg-5">
+              <div class="col-12 row px-5">
                   <div class="col-6">
                     <div class="col-12 pt-lg-3"><a href="https://www.facebook.com/Vir%C3%A1gt%C3%BCnd%C3%A9r-M%C5%B1helye-101123411845057" target="_blank" class="mellow my-2"><h5><i class="fab fa-facebook-square pr-2"></i>Facebook</h5></a></div>
                     <div class="col-12"><a href="#contact" class="mellow my-2"><h5><i class="fas fa-envelope pr-2"></i>Kapcsolat</h5></a></div>
                     <div class="col-12 pb-4"><a href="https://accounts.google.com/ServiceLogin/signinchooser?passive=1209600&continue=https%3A%2F%2Faccounts.google.com%2F&followup=https%3A%2F%2Faccounts.google.com%2F&flowName=GlifWebSignIn&flowEntry=ServiceLogin" target="_blank" class="mellow my-2"><h5><i class="fab fa-google-plus-square pr-2"></i>G-mail</h5></a></div>
                   </div>
-                  <div class="col-6 pl-lg-5">
-                    <div class="col-12 pt-lg-3"><a href="" class="mellow my-2"><h5><i class="fas fa-user-cog pr-2"></i>Admin</h5></a></div>
-                    <div class="col-12"><a href="" class="mellow my-2"><h5><i class="fas fa-toolbox pr-2"></i>Tools</h5></a></div>
+                  <div class="col-6 pl-5">
+                    <div class="col-12 pt-lg-3"><a href="" data-toggle="modal" data-target="#staticBackdrop" class="mellow my-2"><h5><i class="fas fa-user-cog pr-2"></i>Admin</h5></a></div>
+                    <div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                      <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content adminbackground">
+                          <div class="modal-header">
+                            <h5 class="modal-title mellow" id="staticBackdropLabel"><i class="fas fa-user-cog pr-2"></i>Admin bejelentkező:</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <div class="modal-body mellow">
+                              <?php if ($params['message'] === "invalid") : ?>
+                                <div class="alert alert-danger">
+                                Helytelen bejelentkezési adatok
+                                </div>
+                            <?php endif ?>
+                            <?php if ($params['message'] === "successful") : ?>
+                                <div class="alert alert-success">
+                                Regisztráció sikeres
+                                </div>
+                            <?php endif ?>
+                            <form action="/login" method="POST">
+                            <label class="w-100">
+                                Email cím:
+                            <input class="form-control" type="email" name="email">
+                            </label>
+                            <label class="w-100">
+                            Jelszó:
+                            <input class="form-control" type="password" name="password">
+                            </label>
+                            </form>
+                              </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Mégsem</button>
+                            <button type="submit" class="btn btn-primary">Bejelentkezés</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-12"><a href="/tools/images" target="blank" class="mellow my-2"><h5><i class="fas fa-toolbox pr-2"></i>Tools</h5></a></div>
                   </div>
             </div>
               </div>

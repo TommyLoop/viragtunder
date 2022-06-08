@@ -5,21 +5,30 @@
 <div class="container none">
     <div class="card card-body backcol py-5">
         <div class="row p-2 text-center">
-            <img class="img-fluid" src="../public/img/cart.jpg" alt="">
-            <div class="col-12"><h1 class="py-3 text-center" id="cart">A vásárlás menete:<hr></h1></div>
-            <div class="col-4 greeny p-4">1<span class="vertical"> lépés</span>
-                <h5>Helyezze a kosárba a megvásárolandó termékeit:</h5><hr class="green">
+            <div class="col-12 pt-2 row">
+                <div class="d-none d-lg-block col-md-3"><img class="img-fluid col-12" src="..public/img/transport.png" alt="transport.png"></div>
+                <div class="col-12 col-lg-6 mt-lg-4 py-4"><h1 class="p-4 blue termekleiras border-shadow text-center" id="cart">A vásárlás menete:</h1></div>
+                <div class="d-none d-lg-block col-md-3"><img class="img-fluid col-12" src="..public/img/payment.png" alt="payment.png"></div>
             </div>
-            <div class="col-4 redy p-4">2<span class="vertical"> lépés</span>
-                <h5>Adja meg a számlázási és a postázási adtait:</h5><hr class="red">
+            <div class="col-4 col-md-4 greeny p-md-2">1<span class="vertical"> lépés</span>
+                <h5 class="col-12 d-none d-md-block">Helyezze a kosárba a megvásárolandó termékeit:</h5><hr class="green d-none d-md-block">
             </div>
-            <div class="col-4 redy p-4">3<span class="vertical"> lépés</span>
-                <h5>Válassza ki szállítási és a fizetési módot:</h5><hr class="red">
+            <div class="col-8 greeny pt-5 d-block d-md-none"><h5>Helyezze a kosárba a megvásárolandó termékeit:</h5></div>
+            <hr class="col-10 green d-block d-md-none">
+            <div class="col-4 col-md-4 redy p-2">2<span class="vertical"> lépés</span>
+                <h5 class="col-12 d-none d-md-block">A bejelentkezés után, adja meg a számlázási és a postázási adtait:</h5><hr class="red d-none d-md-block">
             </div>
-            <div class="col-4 mellow">Termék:</div>
-            <div class="col-2 mellow">Mennyiség:</div>
-            <div class="col-2 mellow">Egységár:</div>
-            <div class="col-2 mellow">Ára:</div>
+            <div class="col-8 redy pt-5 d-block d-md-none"><h5>A bejelentkezés után, adja meg a számlázási és a postázási adtait:</h5></div>
+            <hr class="col-10 red d-block d-md-none">
+            <div class="col-4 col-md-4 redy p-2">3<span class="vertical"> lépés</span>
+                <h5 class="col-12 d-none d-md-block">Ezt követően válassza ki szállítási és a fizetési módot:</h5><hr class="red d-none d-md-block">
+            </div>
+            <div class="col-8 redy pt-5 d-block d-md-none"><h5>Ezt követően válassza ki szállítási és a fizetési módot:</h5></div>
+            <hr class="col-10 red d-block d-md-none">
+            <div class="col-6 col-md-4 mellow">Termék:</div>
+            <div class="col-6 col-md-2 mellow">Mennyiség:</div>
+            <div class="col-2 d-none d-md-block mellow">Egységár:</div>
+            <div class="col-2 d-none d-md-block mellow">Ára:</div>
             <div class="col-12 py-3"><hr></div>
             <?php if($order === []) : ?>
                 <div class="col-12 p-4 text-center">
@@ -27,9 +36,9 @@
                 </div>
             <?php else : ?>
                 <?php foreach($order as $order) : ?>
-                <div class="col-1 mellow none "><img class="img-fluid" src="<?php echo $order["img"]?>" alt=""></div>
-                <div class="col-3 mellow text-left pt-2"><?php echo $order["name"]?> <?php echo $order["type"]?></div>
-                <div class="col-2 mellow pt-2">
+                <div class="col-2 col-md-1 mellow none "><img class="img-fluid" src="<?php echo $order["img"]?>" alt=""></div>
+                <div class="col-6 col-md-3 mellow text-left pt-2"><?php echo $order["name"]?> <?php echo $order["type"]?></div>
+                <div class="col-4 col-md-2 mellow pt-2">
                 <?php if($params["editedProductId"] === $order["id"]): ?>
                 <form action="/edited" method="POST">
                 <input type="hidden" name="location" value="<?php echo $order["location"] ?>"/>
@@ -44,9 +53,9 @@
                 <?php echo $order["piece"]?> db
                 <?php endif; ?>
                 </div>
-                <div class="col-2 mellow pt-2">x <?php echo $order["price"]?> Ft</div>
-                <div class="col-2 mellow pt-2"><?php echo $productPrice = $order["piece"]*($order["price"])?> Ft</div>
-                <div class="col-2">
+                <div class="col-4 col-md-2 mellow pt-2">x <?php echo $order["price"]?> Ft</div>
+                <div class="col-4 col-md-2 mellow pt-2"><?php echo $productPrice = $order["piece"]*($order["price"])?> Ft</div>
+                <div class="col-4 col-md-2">
                 <div class="mellow text-left  py-2" id="">
                     <a href="/cart?szerkesztes=<?php echo $order["id"] ?>" class="pointer" id="orderEditButton"><h3><i class="fas fa-edit"></i></a>
                     <a href="/delete-product?id=<?php echo $order["id"] ?>"  class="pointer" id="orderDeleteButton"><i class="fas fa-times-circle"></i></h3></a>
@@ -58,11 +67,11 @@
             <?php endif; ?>
             
             <div class="col-12 py-3"><hr></div>
-            <div class="col-8 mellow text-right pr-5">Összesen: 
+            <div class="col-6 col-md-8 mellow text-right pr-5">Összesen: 
             </div>
-            <div class="col-2 text-center mellow"><?php echo $total ?> Ft</div>
-            <div class="col-2 mellow">
-            <button type="button" class="btn btn-block btn-success" <?php echo $order === [] ? "disabled" : "" ?>>Tovább</button>
+            <div class="col-6 col-md-2 text-center mellow"><?php echo $total ?> Ft</div>
+            <div class="col-6 col-md-2 d-block mx-auto pt-4 mellow">
+            <a href="/user"><button type="button" class="btn-block next" <?php echo $order === [] ? "disabled" : "" ?>><span>Tovább</span></button></a>
             </div>
         </div>
     </div>

@@ -235,4 +235,4 @@ $index2 = $params['foundProductIndex2'] ?? 1;
 </div>
 <div class="col12">
       <div class="col-12 px-5 text-center"><img class="img-fluid col-md-3 px-3" src="./public/img/logo5.png" alt=""></div>
-      </div>
+</div>

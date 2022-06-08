@@ -76,7 +76,7 @@ $index2 = $params['foundProductIndex2'] ?? 7;
           <img class="img-fluid border-shadow p-3" src=<?php echo $kublik[$index]['img'] ?> alt="">
         </div>
         <div class="col-12 py-2 text-center" >
-        <form class="p-2" action="/cart" method="POST" id="kubliOrderSubmit">  
+        <form class="p-2" action="/cart" method="POST">  
           <div class="row p-2" id="NamePiece" >
               <div class="col-6"><input type="hidden" name="id" value="<?php echo $kublik[$index]["id"] ?>"/><h5 class="mellow" name="name"><?php echo $kublik[$index]["name"] ?> </h5></div> 
               <div class="col-6"><input type="hidden" name="location" value="<?php echo $kublik[10]["location"] ?>"/><h5 style="color:red;"><?php pieceChecker($kublik[$index]['piece']) ?></h5></div>
@@ -87,7 +87,7 @@ $index2 = $params['foundProductIndex2'] ?? 7;
               <button type="button" id="kublikIncrement" class="input-number-increment" <?php echo $kublik[$index]['piece'] === 0 ? "disabled" : "" ?>>+</button>
               </div>
               </div>
-              <div class="col-6"><button type="submit" id="kubliOrderSender" class="btn-block button" style="vertical-align:middle" <?php echo $kublik[$index]['piece'] === 0 ? "disabled" : "" ?>><span>Kosárba</span></button></div>
+              <div class="col-6"><button type="submit" class="btn-block button" style="vertical-align:middle" <?php echo $kublik[$index]['piece'] === 0 ? "disabled" : "" ?>><span>Kosárba</span></button></div>
           </div>
           </form>
         </div>
