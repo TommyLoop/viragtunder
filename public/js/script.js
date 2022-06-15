@@ -1,4 +1,28 @@
 
+function enable() {
+    var check = document.getElementById("datadefend");
+    if(check.checked){
+        document.getElementById("regbtn").removeAttribute("disabled");
+    } else {
+        document.getElementById("regbtn").disabled = "true";
+    }
+}
+
+function datadefend() {
+    var check1 = document.getElementById("data");
+    var check2 = document.getElementById("aszf");
+    if(check1.checked){
+        if(check2.checked) {
+            document.getElementById("order").removeAttribute("disabled"); 
+        } else {
+            document.getElementById("order").disabled = "true";
+        }
+    } else {
+        document.getElementById("order").disabled = "true";
+    }
+   
+}
+
 document.getElementById("kublikDecrement").onclick = function() {
     var kublik = document.getElementById("kublikPiece");
         var min = parseInt(kublik["min"]);

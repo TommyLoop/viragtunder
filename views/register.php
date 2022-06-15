@@ -6,10 +6,10 @@ $message = $params['message'] ?? "";
     <div class="row backcol p-2">
             <div class="col-12 py-5 text-center"><h1 class="blue">Regisztráció</h1></div>
             <div class="col-11 mx-auto mb-5 p-2 logincolor row">
-                <div class="py-5 mellow col-12 col-md-6 ">
-                    <img class="col-6 mx-auto d-block pr-3 img-fluid" src="..public/img/user-login2.png" alt="">
+                <div class="py-5 mellow col-12 col-lg-5 d-flex align-items-center">
+                    <img class="col-8 mx-auto pr-3 img-fluid" src="..public/img/user.png" alt="">
                 </div>
-                <div class="py-md-5 mellow col-12 col-md-6 ">
+                <div class="py-lg-5 mellow col-12 col-lg-7 ">
                         <?php if ($params['message'] === "invalid") : ?>
                             <div class="alert alert-danger">
                             Helytelen regisztrációs adatok
@@ -24,7 +24,19 @@ $message = $params['message'] ?? "";
                                 Jelszó:
                                 <input class="form-control" type="password" name="password">
                             </label>
-                            <button type="submit" class="col-12 col-lg-4 mt-2 float-right btn btn-primary form-control">Regisztráció</button>
+                            <div class="col-12 col-lg-12 p-t d-flex justify-content-center">
+                            <div class="col-12"><p>A személyes adatokat a weboldalon történő vásárlási élmény fenntartásához, a fiókhoz való hozzáférés kezeléséhez és más célokra használjuk, 
+                                 melyeket a Adatkezelési tájékoztató tartalmaz.</p></div>
+                             </div>
+                             <div class="col-12 col-lg-12 pb-2 d-flex justify-content-center">
+                                <div class="col-12 m-2 form-check" >
+                                    <input class="form-check-input" type="checkbox" value="" id="datadefend" onclick="enable()">
+                                    <label class="form-check-label" for="datadefend">
+                                    Az Adatkezelési tájékoztatóban foglaltakat elfogadom. *  
+                                    </label>
+                                </div>
+                            </div>
+                            <button type="submit" id="regbtn" class="col-12 col-lg-4 mt-2 float-right btn btn-primary form-control" disabled="true">Regisztráció</button>
                         </form>
                         <div class="p-2">
                             Van már felhasználói fiókod?

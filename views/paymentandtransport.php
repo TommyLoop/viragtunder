@@ -37,7 +37,7 @@
                 </div>
                 </div>
                 <div class="form-check p-2 mb-4">
-                <input class="form-check-input checkboxSize" type="radio" name="transport" id="exampleRadios1" value="personal" checked>
+                <input class="form-check-input checkboxSize" type="radio" name="transport" id="exampleRadios1" value="personal">
                 <label class="form-check-label" for="exampleRadios1">
                     <h4 class="blue"><i class="fas fa-walking px-2"></i>Személyes átvétel:</h4>
                     <p class="blue pl-md-4">( 0 Ft )</p>
@@ -60,7 +60,7 @@
                 
                 </div>
                 <div class="form-check p-2">
-                <input class="form-check-input checkboxSize" type="radio" name="transport" id="exampleRadios2" value="mpl">
+                <input class="form-check-input checkboxSize" type="radio" name="transport" id="exampleRadios2" value="mpl" checked>
                 <label class="form-check-label" for="exampleRadios2">
                 <h4 class="blue"><i class="fas fa-shipping-fast px-2"></i>MPL-es házhozszállítás:</h4>
                 <p class="blue pl-md-4">( 1000 Ft )</p>

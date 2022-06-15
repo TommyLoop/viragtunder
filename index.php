@@ -48,6 +48,8 @@ $dispatcher = FastRoute\simpleDispatcher(function(FastRoute\RouteCollector $r) {
     $r->addRoute('POST', '/transportedited', 'transporteditedHandler');
     $r->addRoute('POST', '/orderinvoicing', 'orderInvoicingHandler');
     $r->addRoute('POST', '/ordersummary', 'formCheckHandler');
+    $r->addRoute('POST', '/order', 'orderHandler');
+    $r->addRoute('POST', '/ordersend-mails', 'orderSendMailsHandler');
 
 
 });
@@ -1073,8 +1075,7 @@ function regisztracioHandler()
             'isAuthorized' => isLoggedIn(),
             'isSuccess' => isset($_GET['kuldesSikeres'])
     ]);
-    header('Location: /bejelentkezes');
-}
+}    
 
 /* ---------------------------- "/bejelentkezes" ---------------------------- */
 
@@ -1977,7 +1978,7 @@ function submitMessageHandler()
     ]);
     $statement->execute([
         $_SERVER['RECIPIENT_EMAIL'],
-        "Új üzenet érkezett",
+        'Új üzenet érkezett',
         $body,
         'notSent',
         0,
@@ -2611,14 +2612,212 @@ function formCheckHandler(){
     
 }
 
+/* -------------------------------- "/order" -------------------------------- */
 
+function orderHandler() {
+    if(isLoggedIn()) {
+    // Transport and Payment
+    $transportpayment = json_decode(file_get_contents("./data/transportpayment.json"), true);
+    $transportContent = $transportpayment[0]["content"];
+    $transportPrice = $transportpayment[0]["price"];
+    $payment = $transportpayment[1]["content"];
+    
+    
+    // Orders
+    $userId = $_SESSION['userId'];
+    $pdo = getConnection();
+    $orders = $pdo->prepare("INSERT INTO `orders`
+    (`orderNumbers`, `userID`)
+    VALUES
+    (?, ?);");
+    $orders->execute([
+        "VTM-22-",
+        $userId
+    ]);
 
+    // OrderedProducts
+    $ordersData = $pdo->prepare("SELECT `id` FROM `orders` ");
+    $ordersData->execute();
+    $ordersId = $ordersData->fetchAll(PDO::FETCH_ASSOC);
+    $lastId = end($ordersId);
+    $order = json_decode(file_get_contents("./data/order.json"), true);
+    foreach($order as $products) {
+        $pdo = getConnection();
+        $productName = $products["name"] . " " . $products["type"];
+        $total = $products["piece"]*$products["price"];
+        $order = $pdo->prepare("INSERT INTO `orderedProducts`
+        (`orderID`, `productId`,`name`, `price`, `piece`, `total`)
+        VALUE
+        (?, ?, ?, ?, ?, ?);");
+        $order->execute([
+            $lastId["id"],
+            $products["previous"],
+            $productName,
+            $products["price"],
+            $products["piece"],
+            $total
+        ]);
+    }
+    // UserData
+    $userData = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+    $userData->execute([$userId]);
+    $user = $userData->fetchAll(PDO::FETCH_ASSOC);
+    $userEmail = $user[0]["email"];
+    $userPersonalId = $user[0]["personalID"];
 
+    // PersonalData
+    $personalData = $pdo->prepare("SELECT * FROM personal WHERE id = ?");
+    $personalData->execute([$userPersonalId]);
+    $personal = $personalData->fetchAll(PDO::FETCH_ASSOC);
+    $personalName = $personal[0]["name"];
+    $personalZipcode = $personal[0]["zipcode"];
+    $personalCity = $personal[0]["city"];
+    $personalAddress = $personal[0]["address"];
+    $personalPhoneNumber = $personal[0]["phoneNumber"];
+    $personalTaxNumber = $personal[0]["taxNumber"];
+    $personalTransportId = $personal[0]['transportID'];
 
+    // TransportData
+    $transportData = $pdo->prepare("SELECT * FROM transport WHERE id = ?");
+    $transportData->execute([$personalTransportId]);
+    $transport = $transportData->fetchAll(PDO::FETCH_ASSOC);
+    $transportlName = $transport[0]["name"];
+    $transportZipcode = $transport[0]["zipcode"];
+    $transportCity = $transport[0]["city"];
+    $transportAddress = $transport[0]["address"];
+    $transportPhoneNumber = $transport[0]["phone"];
+    $transportComment = $transport[0]["comment"];
+      
+    // OrderMessages
+    $products = $pdo->prepare("SELECT * FROM orderedProducts WHERE orderID = ? ");
+    $products->execute([$lastId["id"]]);
+    $orderedProducts = $products->fetchAll(PDO::FETCH_ASSOC);
+    
+    $sorderMessages = $pdo->prepare("INSERT INTO `orderMessages` 
+    (`orderNumbers`, `orderID`, `email`, `subject`, `body`, `status`, `numberOfAttempts`, `sentAt`, `createdAt`) 
+    VALUES 
+    (?, ?, ?, ?, ?, ?, ?, ?, ? );");
+    $body = compileTemplate("./views/ordermessage-template.php", [
+        'orderedProducts' => $orderedProducts,
+        'id' =>  $lastId["id"],
+        'email' => $userEmail,
+        'transportContent' => $transportContent,
+        'transportPrice' =>  $transportPrice,
+        'payment' => $payment,
+        'personalName' => $personalName,
+        'personalZipcode' => $personalZipcode,
+        'personalCity' => $personalCity,
+        'personalAddress' => $personalAddress,
+        'personalPhoneNumber' => $personalPhoneNumber,
+        'personalTaxNumber' => $personalTaxNumber,
+        'transportlName' => $transportlName,
+        'transportZipcode' => $transportZipcode,
+        'transportCity' => $transportCity,
+        'transportAddress' => $transportAddress,
+        'transportPhoneNumber' => $transportPhoneNumber,
+        'transportComment' => $transportComment,
+    ]);
+    $sorderMessages->execute([
+        'VTM-22-',
+        $lastId["id"],
+        $_SERVER['RECIPIENT_EMAIL'],
+        'Új megrendelés érkezett',
+        $body,
+        'notSent',
+        0,
+        0,
+        time()
+    ]);
 
+    $products = json_decode(file_get_contents("./data/order.json"), true);
+        $products = [];
+        $productsjson = json_encode($products, JSON_UNESCAPED_UNICODE);
+        file_put_contents("./data/order.json", $productsjson);
 
+        $transportpayment = [];
+        $transportjson = json_encode($transportpayment, JSON_UNESCAPED_UNICODE);
+        file_put_contents("./data/transportpayment.json", $transportjson);
+    
+    $successfulOrder = compileTemplate('./views/successfulorder.php', [
+        'ordernumber' => $lastId["id"]
+    ]);
+    echo compileTemplate('./views/wrapper.php', [
+        'loginTemplate' => $successfulOrder,
+        'rattanTemplate' => null,
+        'heartboxTemplate' => null,
+        'szalasTemplate' => null,
+        'koszoruTemplate' => null,
+        "karacsonyTemplate" => null,
+        'bemutatoTemplate' => null,
+        'valentinTemplate' => null,
+        'innerIntroductionTemplate' => null,
+        'innerTemplate' => null,
+        'innerCartTemplate' => null,
+        'isAuthorized' => isLoggedIn()
+        ]);
+        
 
+    } exit;
+    
+}
 
+/* ------------------------------- /ordersend-mails ------------------------------ */
+
+function orderSendMailsHandler(){
+    
+    if(($_POST['key'] ?? '') !== $_SERVER['WORKER_KEY']) {
+        http_response_code(401);
+        echo json_encode(['error' => 'unauthorized']);
+        return;
+    }
+
+    $pdo = getConnection();
+    $statement = $pdo->prepare(
+        "SELECT * FROM orderMessages 
+        WHERE 
+        status = 'notSent' AND 
+        numberOfAttempts < 10 
+        ORDER BY createdAt ASC"
+    );
+    $statement->execute();
+    $messages = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($messages as $message) {
+        $pdo = getConnection();
+        $statement = $pdo->prepare(
+            "UPDATE `orderMessages` SET 
+                status = 'sending', 
+                numberOfAttempts = ? 
+            WHERE id = ?;"
+        );
+
+        $statement->execute([
+            (int)$message['numberOfAttempts'] + 1,
+            $message['id']
+        ]);
+
+        $isSent = sendMail(
+            $message['email'],
+            $message['subject'],
+            $message['body']
+        );
+
+        if ($isSent) {
+            $statement = $pdo->prepare(
+                "UPDATE `orderMessages` SET status = 'sent', sentAt = ? WHERE id = ?;"
+            );
+            $statement->execute([
+                time(),
+                $message['id'],
+            ]);
+        } else {
+            $statement = $pdo->prepare("UPDATE `orderMessages` SET status = 'notSent' WHERE id = ?;");
+            $statement->execute([
+                $message['id']
+            ]);
+        }
+    }
+}
 
 
 

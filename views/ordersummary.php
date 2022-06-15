@@ -98,12 +98,30 @@
                 </div>
                 <div class="col-6 col-md-2 text-center"><?php echo ($transportpayment[0]["price"] + $total) ?> Ft</div>
             </div>
-            <div class="col-12 row d-flex justify-content-center mellow">
-                <div class="col-12 col-lg-12 p-2 d-flex justify-content-center">
-                    <a href="/transportandpayment" class="px-3"><button type="button" class="col-12 col-lg-12 btn-block back px-5"><span>Vissza</span></button></a>
+            <div class="col-12 row mellow">
+            <form class="col-12" action="/order" method="POST">
+                <div class="col-12 col-lg-12 pb-2 d-flex justify-content-center">
+                    <div class="col-6 m-2 form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="data"  onclick="datadefend()">
+                        <label class="form-check-label" for="defaultCheck1">
+                        Az Adatkezelési tájékoztatóban foglaltakat elfogadom. *  
+                        </label>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-12 pb-2 d-flex justify-content-center">
+                    <div class="col-6 m-2 form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="aszf"  onclick="datadefend()">
+                        <label class="form-check-label" for="defaultCheck2">
+                        Tudomásul veszem és elfogadom az ÁSZF-ben foglaltakat, valamint a rendeléssel járó fizetési kötelezettséget. *
+                        </label>
+                    </div>
                 </div>
                 <div class="col-12 col-lg-12 p-2 d-flex justify-content-center">
-                    <button type="button" class="col-6 col-lg-3 btn-block next px-5 <?php echo $order === [] ? "disabled" : "" ?>"><span>Megrendel</span></button>
+                    <button type="submit" class="col-6 col-lg-3 btn next px-5" disabled="true" id="order"><span>Megrendel</span></button>
+                </div>
+            </form>
+                <div class="col-12 col-lg-12 px-2 py-4 d-flex justify-content-left">
+                    <a href="/transportandpayment" class="px-3"><button type="button" class="col-12 col-lg-12 btn-block back px-5"><span>Vissza</span></button></a>
                 </div>
             </div>
             </div>

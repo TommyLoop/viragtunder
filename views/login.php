@@ -2,8 +2,8 @@
     <div class="row backcol p-2">
             <div class="col-12 py-5 text-center"><h1 class="blue">Bejelentkezés</h1></div>
             <div class="col-11 mx-auto mb-5 p-2 logincolor row">
-                <div class="py-5 mellow col-12 col-md-5 ">
-                    <img class="col-6 mx-auto d-block pr-md-3 img-fluid" src="..public/img/user-login.png" alt="">
+                <div class="py-5 mellow col-12 col-md-5 d-flex align-items-center">
+                    <img class="col-8 mx-auto d-block pr-md-3 img-fluid" src="..public/img/user.png" alt="">
                 </div>
                 <div class="py-md-5 mellow col-12 col-md-6 ">
                         <?php if ($params['message'] === "invalid") : ?>

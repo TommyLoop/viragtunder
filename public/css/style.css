@@ -366,6 +366,7 @@ img.hov:hover {
  .next:hover {
   background: #0ebe6f;
   border: solid 4px #ffffff;
+  color: #ffffff;
  }
  .next:hover span {
   padding-right: 2em;
@@ -375,6 +376,12 @@ img.hov:hover {
   opacity: 4;
   right: 0;
  }
+ .next:disabled {
+   color:white;
+  cursor: not-allowed;
+  pointer-events: none;
+ }
+ 
 
  .back {
 
