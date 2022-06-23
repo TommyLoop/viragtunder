@@ -16,13 +16,13 @@
             <img class="d-block w-100" src="..public/img/carousel2.jpg" alt="Second slide">
           </div>
           <div class="carousel-item">
-            <img class="d-block w-100" src="..public/img/carousel7.jpg" alt="Third slide">
+            <img class="d-block w-100" src="..public/img/carousel8.jpg" alt="Third slide">
           </div>
           <div class="carousel-item">
             <img class="d-block w-100" src="..public/img/carousel4.jpg" alt="Fourth slide">
           </div>
           <div class="carousel-item">
-            <img class="d-block w-100" src="..public/img/carousel5.jpg" alt="Fifth slide">
+            <img class="d-block w-100" src="..public/img/carousel9.jpg" alt="Fifth slide">
           </div>
         </div>
         <a class="carousel-control-prev" href="#valami" role="button" data-slide="prev">

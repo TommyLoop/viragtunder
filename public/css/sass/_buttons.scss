@@ -1,0 +1,169 @@
+.button {
+    border-radius: 30px;
+    border: solid 4px #0a9734;
+    background: #00B637;
+    color: #ffffff;
+    font-family: inherit;
+    text-align: center;
+    padding: 0.7em;
+    transition: all 0.4s;
+    cursor: pointer;
+
+    span {
+        cursor: pointer;
+        display: inline-block;
+        position: relative;
+        transition: 0.4s;
+    }
+    & span:after {
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900;
+        content: "\f07a";
+        color: #ffffff;
+        position: absolute;
+        opacity: 0;
+        top: 0;
+        right: -20px;
+        transition: 0.7s;
+    }
+    &:hover {
+        background: #268542;
+        border: solid 4px #fee7d5;
+    }
+    &:hover span {
+        padding-right: 2em;
+    }
+    &:hover span:after {
+        opacity: 4;
+        right: 0;
+    }
+}
+
+.send {
+    border-radius: 30px;
+    border: solid 4px #12515e;
+    background: #307280;
+    color: #ffffff;
+    font-family: inherit;
+    text-align: center;
+    padding: 0.7em;
+    transition: all 0.4s;
+    cursor: pointer;
+
+    span {
+        cursor: pointer;
+        display: inline-block;
+        position: relative;
+        transition: 0.4s;
+    }
+    & span:after {
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900;
+        content: "\f0e0";
+        color: #ffffff;
+        position: absolute;
+        opacity: 0;
+        top: 0;
+        right: -20px;
+        transition: 0.7s;
+    }
+    &:hover {
+        background: #249ab8;
+        border: solid 4px #ffffff;
+    }
+    &:hover span {
+        padding-right: 2em;
+    }
+    &:hover span:after {
+        opacity: 4;
+        right: 0;
+    }
+}
+
+.next {
+    border-radius: 30px;
+    border: solid 4px #08693e;
+    background: #00A359;
+    color: #ffffff;
+    font-family: inherit;
+    text-align: center;
+    padding: 0.7em;
+    transition: all 0.4s;
+    cursor: pointer;
+
+    span {
+        cursor: pointer;
+        display: inline-block;
+        position: relative;
+        transition: 0.4s;
+    }
+    & span:after {
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900;
+        content: "\f101";
+        color: #ffffff;
+        position: absolute;
+        opacity: 0;
+        top: 0;
+        right: -20px;
+        transition: 0.7s;
+    }
+    &:hover {
+        background: #0ebe6f;
+        border: solid 4px #ffffff;
+        color: #ffffff;
+    }
+    &:hover span {
+        padding-right: 2em;
+    }
+    &:hover span:after {
+        opacity: 4;
+        right: 0;
+    }
+    &:disabled {
+        color: #ffffff;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+}
+.back {
+    border-radius: 30px;
+    border: solid 4px #08693e;
+  background: #00A359;
+    color: #ffffff;
+    font-family: inherit;
+    text-align: center;
+    padding: 0.7em;
+    transition: all 0.4s;
+    cursor: pointer;
+
+    span {
+        cursor: pointer;
+        display: inline-block;
+        position: relative;
+        transition: 0.4s;
+    }
+    & span:after {
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900;
+        content: "\f100";
+        color: #ffffff;
+        position: absolute;
+        opacity: 0;
+        top: 0;
+        right: -20px;
+        transition: 0.7s;
+    }
+    &:hover {
+        background: #0ebe6f;
+        border: solid 4px #ffffff;
+    }
+    &:hover span {
+        padding-right: 2em;
+    }
+    &:hover span:after {
+        opacity: 4;
+        right: 0;
+    }
+}
+
