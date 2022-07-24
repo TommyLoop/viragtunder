@@ -35,6 +35,7 @@ $dispatcher = FastRoute\simpleDispatcher(function(FastRoute\RouteCollector $r) {
     $r->addRoute('GET', '/tools/png', 'pngHandler');
     $r->addRoute('GET', '/tools/other', 'otherHandler');
     $r->addRoute('GET', '/ordersummary', 'ordersummaryHandler');
+    $r->addRoute('GET', '/admin', 'getadminHandler');
     $r->addRoute('POST', '/edited', 'editedHandler');
     $r->addRoute('POST', '/cart', 'cartSendHandler');
     $r->addRoute('POST', '/register', 'registrationHandler');
@@ -50,6 +51,11 @@ $dispatcher = FastRoute\simpleDispatcher(function(FastRoute\RouteCollector $r) {
     $r->addRoute('POST', '/ordersummary', 'formCheckHandler');
     $r->addRoute('POST', '/order', 'orderHandler');
     $r->addRoute('POST', '/ordersend-mails', 'orderSendMailsHandler');
+    $r->addRoute('POST', '/admin', 'adminHandler');
+    $r->addRoute('POST', '/adminedit', 'adminEditHandler');
+    $r->addRoute('POST', '/adminproductname', 'adminProductNameHandler');
+    $r->addRoute('POST', '/adminlogout', 'adminLogoutHandler');
+
 
 
 });
@@ -105,6 +111,17 @@ function isLoggedIn(): bool
     }
     session_start();
     if (!isset($_SESSION['userId'])) { 
+        return false; 
+    }
+    return true;
+}
+function isAdmin(): bool
+{
+    if (!isset($_COOKIE[session_name()])) { 
+        return false; 
+    }
+    session_start();
+    if (!isset($_SESSION['IS_ADMIN'])) { 
         return false; 
     }
     return true;
@@ -1708,6 +1725,22 @@ function ordersummaryHandler(){
 }
 
 
+/* -------------------------------- "/admin" -------------------------------- */
+
+function getadminHandler() {
+    if(isAdmin())
+    {
+        echo compileTemplate('./views/admin.php', [
+            "editedProductId" => $_GET["pieceszerkesztes"] ?? "",
+            "productName" => $_GET["nameszerkesztes"] ?? ""
+        ]);
+    } else {
+        header('Location: /');
+    }
+    
+    
+}
+
 
 /* -------------------------------------------------------------------------- */
 /*                      Rendszerfüggvények "POST" method                      */
@@ -2819,6 +2852,116 @@ function orderSendMailsHandler(){
     }
 }
 
+/* -------------------------------- "/admin" -------------------------------- */
+
+function adminHandler() {
+    if($_POST['username'] !== $_SERVER['ADMIN_USERNAME']) {
+    notFoundHandler();
+    return;
+    } else {
+        if($_POST['password'] !== $_SERVER['ADMIN_PASSWORD']){
+            notFoundHandler();
+            return;
+        } else {
+            session_start();
+            $_SESSION["IS_ADMIN"] = true;
+            echo compileTemplate('./views/admin.php', [
+            "editedProductId" => $_GET["pieceszerkesztes"] ?? "",
+            "productName" => $_GET["nameszerkesztes"] ?? ""
+            ]);
+        }
+    }
+    
+
+   
+    
+}
+
+/* ------------------------------ "/adminedit" ------------------------------ */
+
+function adminEditHandler(){
+    if(isAdmin())
+    {
+        $index = $_POST["index"];
+        if($index <= 4) {
+            $index = 1;
+        }else {
+            $index = $index-3;
+        };
+        $productLocation = $_POST["location"];
+        $productID = $_POST["id"];
+        $Location = "./data/$productLocation.json";
+        $headerLocation = "/admin#$productLocation$index";
+        $products = json_decode(file_get_contents($Location), true);
+        $foundProductIndex = -1;
+        foreach($products as $index => $product) {
+            if($product["id"] === $productID) {
+                $foundProductIndex = $index;
+                break;
+            }
+        }
+        if($foundProductIndex === -1) {
+            header("Location: /admin");
+            return;
+        }
+        $products[$foundProductIndex]["piece"] = $_POST["piece"];
+        $json = json_encode($products, JSON_UNESCAPED_UNICODE);
+        file_put_contents($Location, $json);
+        header("Location: $headerLocation");
+    } else {
+        header('Location: /');
+    }
+    
+}
+
+/* --------------------------- "/adminproductname" -------------------------- */
+
+function adminProductNameHandler() {
+    if(isAdmin())
+    {
+       
+    $index = $_POST["index"];
+    if($index <= 4) {
+        $index = 1;
+    }else {
+        $index = $index-3;
+    };
+    $productLocation = $_POST["location"];
+    $productID = $_POST["id"];
+    $Location = "./data/$productLocation.json";
+    $headerLocation = "/admin#$productLocation$index";
+    $products = json_decode(file_get_contents($Location), true);
+    $foundProductIndex = -1;
+    foreach($products as $index => $product) {
+        if($product["id"] === $productID) {
+            $foundProductIndex = $index;
+            break;
+        }
+    }
+    if($foundProductIndex === -1) {
+        header("Location: /admin");
+        return;
+    }
+    $products[$foundProductIndex]["name"] = $_POST["name"];
+    $json = json_encode($products, JSON_UNESCAPED_UNICODE);
+    file_put_contents($Location, $json);
+    header("Location: $headerLocation");
+    } else {
+        header('Location: /');
+    }
+    
+}
+
+
+/* ----------------------------- "/adminlogout" ----------------------------- */
+
+function adminLogoutHandler() {
+    session_start();
+    $params = session_get_cookie_params(); 
+    setcookie(session_name(),  '', 0, $params['path'], $params['domain'], $params['secure'], isset($params['httponly']));
+    session_destroy(); 
+    header('Location: /'); 
+}
 
 
 ?>

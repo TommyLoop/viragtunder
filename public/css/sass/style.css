@@ -226,14 +226,36 @@ h4 {
   border-radius: 0 !important;
 }
 
+.backcol3 {
+  background: #cdeff7;
+  background: radial-gradient(ellipse at center, #cdeff7 0%, #b0b0d9 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#cdeff7", endColorstr="#b0b0d9", GradientType=1 );
+}
+
+.backcol4 {
+  background-image: url("backcol.svg");
+  background-size: cover;
+}
+
+.backcol5 {
+  background-image: url("backcol2.svg");
+  background-size: cover;
+}
+
 .col12 {
-  background-image: url(back.png);
+  background-image: url("back.png");
   background-size: cover;
 }
 
 .col21 {
-  background-image: url(back2.png);
+  background-image: url("back2.png");
   background-size: cover;
+}
+
+.logout {
+  position: fixed;
+  padding-top: 3rem;
+  padding-left: 5rem;
 }
 
 .greeny {
@@ -466,10 +488,8 @@ img.hov:hover {
 
 /* [1] The container */
 .img-hover-zoom {
-  height: auto;
-  /* [1.1] Set it as per your need */
-  overflow: hidden;
-  /* [1.2] Hide the overflowing of child elements */
+  height: auto; /* [1.1] Set it as per your need */
+  overflow: hidden; /* [1.2] Hide the overflowing of child elements */
 }
 
 /* [2] Transition property for smooth transformation of images */

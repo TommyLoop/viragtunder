@@ -48,6 +48,28 @@ background-color: $secondary-bg-color;
 border: none !important;
 border-radius: 0 !important;
 }
+.backcol3 {
+  
+background: #cdeff7;
+background: -moz-radial-gradient(center, ellipse cover, #cdeff7 0%, #b0b0d9 100%);
+background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%, #cdeff7), color-stop(100%, #b0b0d9));
+background: -webkit-radial-gradient(center, ellipse cover, #cdeff7 0%, #b0b0d9 100%);
+background: -o-radial-gradient(center, ellipse cover, #cdeff7 0%, #b0b0d9 100%);
+background: -ms-radial-gradient(center, ellipse cover, #cdeff7 0%, #b0b0d9 100%);
+background: radial-gradient(ellipse at center, #cdeff7 0%, #b0b0d9 100%);
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cdeff7', endColorstr='#b0b0d9', GradientType=1 );
+
+  
+}
+.backcol4 {
+  background-image: url("backcol.svg");
+  background-size: cover;
+}
+.backcol5 {
+  background-image: url("backcol2.svg");
+  background-size: cover;
+}
+
 .col12 {
   background-image: url("back.png");
   background-size: cover;
@@ -55,6 +77,11 @@ border-radius: 0 !important;
 .col21 {
   background-image: url("back2.png");
   background-size: cover;
+}
+.logout {
+  position: fixed;
+  padding-top: 3rem;
+  padding-left: 5rem;
 }
 .greeny {
   font-size:100px;

@@ -56,7 +56,7 @@
                 <div class="col-4 col-md-2 mellow pt-2">x <?php echo $order["price"]?> Ft</div>
                 <div class="col-4 col-md-2 mellow pt-2"><?php echo $productPrice = $order["piece"]*($order["price"])?> Ft</div>
                 <div class="col-4 col-md-2">
-                <div class="mellow text-left  py-2" id="">
+                <div class="mellow text-left  py-2">
                     <a href="/cart?szerkesztes=<?php echo $order["id"] ?>" class="pointer" id="orderEditButton"><h3><i class="fas fa-edit"></i></a>
                     <a href="/delete-product?id=<?php echo $order["id"] ?>"  class="pointer" id="orderDeleteButton"><i class="fas fa-times-circle"></i></h3></a>
                 </div>  

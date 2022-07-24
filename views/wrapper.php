@@ -175,32 +175,35 @@
                               <span aria-hidden="true">&times;</span>
                             </button>
                           </div>
+                          <form action="/admin" method="POST">
                           <div class="modal-body mellow">
+                            
                               <?php if ($params['message'] === "invalid") : ?>
                                 <div class="alert alert-danger">
                                 Helytelen bejelentkezési adatok
                                 </div>
-                            <?php endif ?>
-                            <?php if ($params['message'] === "successful") : ?>
+                              <?php endif ?>
+                              <?php if ($params['message'] === "successful") : ?>
                                 <div class="alert alert-success">
                                 Regisztráció sikeres
                                 </div>
-                            <?php endif ?>
-                            <form action="/login" method="POST">
-                            <label class="w-100">
-                                Email cím:
-                            <input class="form-control" type="email" name="email">
-                            </label>
-                            <label class="w-100">
-                            Jelszó:
-                            <input class="form-control" type="password" name="password">
-                            </label>
-                            </form>
+                              <?php endif ?>
+                           
+                              <label class="w-100">
+                                  Felhasználónév::
+                              <input class="form-control" type="text" name="username">
+                              </label>
+                              <label class="w-100">
+                              Jelszó:
+                              <input class="form-control" type="password" name="password">
+                              </label>
+                            
                               </div>
                           <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Mégsem</button>
                             <button type="submit" class="btn btn-primary">Bejelentkezés</button>
                           </div>
+                          </form>
                         </div>
                       </div>
                     </div>
